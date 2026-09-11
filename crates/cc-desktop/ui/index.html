@@ -535,10 +535,16 @@
           <div class="page-title" data-i18n="configs.title">Configs</div>
           <div class="page-sub" data-i18n="configs.sub">One shared pool. Attach entries to projects, override per environment.</div>
         </div>
-        <button class="btn btn-primary" onclick="openModal('modal-config')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-          <span data-i18n="configs.new">New Config</span>
-        </button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost" onclick="openImport()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+            <span data-i18n="configs.import">Import</span>
+          </button>
+          <button class="btn btn-primary" onclick="openModal('modal-config')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            <span data-i18n="configs.new">New Config</span>
+          </button>
+        </div>
       </div>
 
       <div class="toolbar">
@@ -857,6 +863,49 @@
   </div>
 </div>
 
+<!-- Modal: import -->
+<div class="modal" id="modal-import">
+  <div class="modal-panel" style="width:680px">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="modal.import.title">Import configs</div>
+      <button class="btn-icon" onclick="closeModal('modal-import')" aria-label="Close">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="seg-group" id="import-tabs">
+        <button class="seg active" data-tab="paste" data-i18n="import.tab.paste">Paste</button>
+        <button class="seg" data-tab="files" data-i18n="import.tab.files">Files</button>
+        <button class="seg" data-tab="ai" data-i18n="import.tab.ai">For your AI</button>
+      </div>
+      <div id="import-pane-paste">
+        <textarea class="export-area" id="import-text" style="min-height:170px" spellcheck="false" placeholder="DATABASE_HOST=localhost&#10;API_KEY=&quot;sk-...&quot;&#10;—— 或 JSON ——&#10;{&quot;database&quot;: {&quot;host&quot;: &quot;localhost&quot;}}"></textarea>
+      </div>
+      <div id="import-pane-files" style="display:none">
+        <button class="btn btn-ghost btn-sm" onclick="chooseImportFiles()" data-i18n="import.chooseFiles">Choose files…</button>
+        <div id="import-file-list" class="dim" style="margin-top:8px;font-family:var(--mono);font-size:11.5px;white-space:pre-wrap"></div>
+      </div>
+      <div id="import-pane-ai" style="display:none">
+        <pre class="code-block" id="import-ai-prompt" style="max-height:300px"></pre>
+        <div style="margin-top:8px">
+          <button class="btn btn-ghost btn-sm" onclick="copyImportPrompt()" data-i18n="btn.copy">Copy</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <input class="input" id="import-group" style="flex:1" data-i18n-ph="import.groupPh" placeholder="group (optional)" spellcheck="false">
+        <label class="share-check"><input type="checkbox" id="import-overwrite"> <span data-i18n="import.overwrite">Overwrite existing keys</span></label>
+      </div>
+      <div class="field-hint" data-i18n="import.hint">Auto-detects .env / JSON / YAML. Likely secrets are encrypted automatically.</div>
+      <div id="import-preview"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-import')" data-i18n="btn.cancel">Cancel</button>
+      <button class="btn btn-ghost" onclick="previewImport()" data-i18n="import.previewBtn">Preview</button>
+      <button class="btn btn-primary" onclick="confirmImport()" data-i18n="import.confirmBtn">Import</button>
+    </div>
+  </div>
+</div>
+
 <div class="toasts" id="toasts"></div>
 
 <script>
@@ -872,6 +921,18 @@ const I18N = {
     'configs.title': 'Configs',
     'configs.sub': 'One shared pool. Attach entries to projects, override per environment.',
     'configs.new': 'New Config',
+    'configs.import': 'Import',
+    'modal.import.title': 'Import configs',
+    'import.tab.paste': 'Paste', 'import.tab.files': 'Files', 'import.tab.ai': 'For your AI',
+    'import.chooseFiles': 'Choose files…', 'import.noFiles': 'No files selected',
+    'import.groupPh': 'group (optional)', 'import.overwrite': 'Overwrite existing keys',
+    'import.hint': 'Auto-detects .env / JSON / YAML. Likely secrets (key/token/secret/password names, sk- prefixes) are encrypted automatically.',
+    'import.previewBtn': 'Preview', 'import.confirmBtn': 'Import',
+    'import.noEntries': 'Nothing importable found',
+    'import.secretTag': 'secret', 'import.existsTag': 'exists', 'import.newTag': 'new',
+    'import.typeCol': 'Type', 'import.statusCol': 'Status',
+    'import.summary': '{n} entries · {secrets} secrets · {exists} already exist',
+    'import.result': 'Imported: {added} added, {updated} updated, {skipped} skipped, {secrets} secrets encrypted',
     'projects.title': 'Projects',
     'projects.sub': 'Copy the link into any SDK — <code>ConfigCenter.from_url(link)</code>',
     'projects.new': 'New Project',
@@ -954,6 +1015,18 @@ const I18N = {
     'configs.title': '配置',
     'configs.sub': '一个共享配置池，按项目组合归属，按环境覆盖。',
     'configs.new': '新建配置',
+    'configs.import': '导入',
+    'modal.import.title': '导入配置',
+    'import.tab.paste': '粘贴文本', 'import.tab.files': '选择文件', 'import.tab.ai': '交给 AI',
+    'import.chooseFiles': '选择文件…', 'import.noFiles': '未选择文件',
+    'import.groupPh': '分组（可选）', 'import.overwrite': '覆盖同名配置',
+    'import.hint': '自动识别 .env / JSON / YAML；疑似密钥（键名含 key/token/secret/password 或值以 sk- 开头）会自动加密存储。',
+    'import.previewBtn': '预览', 'import.confirmBtn': '确认导入',
+    'import.noEntries': '没解析到可导入的内容',
+    'import.secretTag': '密钥', 'import.existsTag': '已存在', 'import.newTag': '新增',
+    'import.typeCol': '类型', 'import.statusCol': '状态',
+    'import.summary': '共 {n} 条 · 密钥 {secrets} 条 · 已存在 {exists} 条',
+    'import.result': '导入完成：新增 {added}，更新 {updated}，跳过 {skipped}，密钥加密 {secrets}',
     'projects.title': '项目',
     'projects.sub': '复制链接接入任意 SDK — <code>ConfigCenter.from_url(link)</code>',
     'projects.new': '新建项目',
@@ -1390,6 +1463,135 @@ async function copyExport() {
   const content = document.getElementById('export-content').value;
   try { await navigator.clipboard.writeText(content); toast(t('toast.exportCopied')); }
   catch { toast(t('toast.copyFailed'), 'err'); }
+}
+
+/* ── import (existing config files / AI) ───────────────── */
+let importTab = 'paste';
+let importFiles = [];
+
+function openImport() {
+  importTab = 'paste';
+  importFiles = [];
+  document.getElementById('import-text').value = '';
+  document.getElementById('import-file-list').textContent = '';
+  document.getElementById('import-preview').innerHTML = '';
+  document.getElementById('import-group').value = '';
+  document.getElementById('import-overwrite').checked = false;
+  renderImportTabs();
+  renderImportPrompt();
+  openModal('modal-import');
+}
+
+function renderImportTabs() {
+  document.querySelectorAll('#import-tabs .seg').forEach(b => b.classList.toggle('active', b.dataset.tab === importTab));
+  document.getElementById('import-pane-paste').style.display = importTab === 'paste' ? '' : 'none';
+  document.getElementById('import-pane-files').style.display = importTab === 'files' ? '' : 'none';
+  document.getElementById('import-pane-ai').style.display = importTab === 'ai' ? '' : 'none';
+}
+document.querySelectorAll('#import-tabs .seg').forEach(b => {
+  b.addEventListener('click', () => { importTab = b.dataset.tab; renderImportTabs(); });
+});
+
+async function chooseImportFiles() {
+  try {
+    importFiles = await invoke('pick_import_files');
+    document.getElementById('import-file-list').textContent = importFiles.length ? importFiles.join('\n') : t('import.noFiles');
+  } catch (e) { toast(String(e), 'err'); }
+}
+
+function importPayload() {
+  return {
+    text: importTab === 'paste' ? document.getElementById('import-text').value : null,
+    paths: importTab === 'files' ? importFiles : [],
+  };
+}
+
+async function previewImport() {
+  const { text, paths } = importPayload();
+  try {
+    const entries = await invoke('preview_import', { text, paths });
+    if (!entries.length) { toast(t('import.noEntries'), 'err'); return; }
+    renderImportPreview(entries);
+  } catch (e) { toast(String(e), 'err'); }
+}
+
+function renderImportPreview(entries) {
+  const secrets = entries.filter(e => e.secret).length;
+  const exists = entries.filter(e => e.exists).length;
+  const rows = entries.slice(0, 50).map(e => `
+    <tr>
+      <td class="cell-key" title="${esc(e.key)}">${esc(e.key)}</td>
+      <td class="${e.secret ? 'cell-value masked' : 'cell-value'}">${e.secret ? icon('lock', 12) + '<span>••••••</span>' : esc(e.value) || '<span class="dim">—</span>'}</td>
+      <td>${e.secret ? `<span class="tag">${esc(t('import.secretTag'))}</span>` : ''}</td>
+      <td>${e.exists
+        ? `<span class="tag" style="color:var(--text-3)">${esc(t('import.existsTag'))}</span>`
+        : `<span class="tag" style="border-color:transparent;background:var(--accent-soft);color:var(--accent-fg)">${esc(t('import.newTag'))}</span>`}</td>
+    </tr>`).join('');
+  document.getElementById('import-preview').innerHTML = `
+    <div class="field-hint" style="margin-bottom:8px">${esc(t('import.summary', { n: entries.length, secrets, exists }))}</div>
+    <div style="max-height:230px;overflow:auto;border:1px solid var(--border);border-radius:9px">
+      <table>
+        <thead><tr><th>${esc(t('th.key'))}</th><th>${esc(t('th.value'))}</th><th>${esc(t('import.typeCol'))}</th><th>${esc(t('import.statusCol'))}</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+async function confirmImport() {
+  const { text, paths } = importPayload();
+  const group = document.getElementById('import-group').value.trim() || null;
+  const overwrite = document.getElementById('import-overwrite').checked;
+  try {
+    const r = await invoke('run_import', { text, paths, group, overwrite });
+    toast(t('import.result', { added: r.added, updated: r.updated, skipped: r.skipped, secrets: r.secrets }));
+    closeModal('modal-import');
+    loadConfigs();
+  } catch (e) { toast(String(e), 'err'); }
+}
+
+function renderImportPrompt() {
+  const tc = state.toolchain || {};
+  const cli = tc.cli || 'cascade';
+  const zh = state.lang === 'zh';
+  const prompt = zh
+    ? `【Cascade 配置导入】帮我把这个项目的现有配置收集进 Cascade 配置中心。
+
+本机 Cascade 命令行：${cli}
+
+请这样做：
+1. 扫描项目里的配置文件（.env、.env.*、settings.json、*.yaml/yml），列出所有 key → value
+2. 推荐直接本地导入（密钥不离开本机）：
+   ${cli} import <文件路径...> --group <分组名>     # 同名默认跳过，加 --overwrite 覆盖
+   ${cli} import <文件路径...> --dry-run            # 先预览
+3. 或者把整理结果输出成 JSON 贴给我（我在桌面端「导入 → 粘贴文本」里用）：
+   {"database.host": "localhost", "api.key": "sk-xxx"}
+
+注意：
+- 键名含 key/token/secret/password 或值以 sk- 等开头的配置，Cascade 会自动识别并加密存储
+- 不要把真实密钥贴到聊天里；优先用第 2 步本机导入`
+    : `[Cascade import] Help me collect this project's existing config into Cascade.
+
+Local Cascade CLI: ${cli}
+
+Please:
+1. Scan config files (.env, .env.*, settings.json, *.yaml/yml) and list every key -> value
+2. Preferred: import locally (secrets never leave this machine):
+   ${cli} import <files...> --group <name>     # existing keys are skipped; add --overwrite to replace
+   ${cli} import <files...> --dry-run          # preview first
+3. Or output the result as one JSON object for me to paste into the desktop app (Import -> Paste):
+   {"database.host": "localhost", "api.key": "sk-xxx"}
+
+Notes:
+- Keys containing key/token/secret/password, or values with prefixes like sk-, are auto-detected and encrypted
+- Do not paste real secrets into chat; prefer the local import in step 2`;
+  document.getElementById('import-ai-prompt').textContent = prompt;
+}
+
+async function copyImportPrompt() {
+  try {
+    await navigator.clipboard.writeText(document.getElementById('import-ai-prompt').textContent);
+    toast(t('toast.codeCopied'));
+  } catch { toast(t('toast.copyFailed'), 'err'); }
 }
 
 /* ── config CRUD ───────────────────────────────────────── */
@@ -1940,6 +2142,7 @@ function setLang(lang) {
   applyI18n();
   updateLangButton();
   updateThemeIcon();
+  try { renderImportPrompt(); } catch (e) {}
   // Full reload: dropdown options / project cards / env tables are all
   // generated JS strings, so re-render every view (not just the visible one).
   Promise.allSettled([loadConfigs(), loadEnvs(), loadProjects()]);

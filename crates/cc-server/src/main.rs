@@ -2,7 +2,7 @@ use axum::{
     extract::State,
     middleware,
     response::sse::{Event, Sse},
-    routing::get,
+    routing::{get, post},
     Router,
 };
 use clap::Parser;
@@ -121,6 +121,7 @@ async fn main() -> anyhow::Result<()> {
             get(http_routes::env::get).delete(http_routes::env::delete),
         )
         .route("/api/sse/configs", get(sse_handler))
+        .route("/api/import", post(http_routes::import::import))
         .layer(middleware::from_fn_with_state(
             state.clone(),
             auth::require_token,

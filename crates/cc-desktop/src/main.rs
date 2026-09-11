@@ -45,6 +45,9 @@ fn main() {
             commands::system::share_status,
             commands::system::share_start,
             commands::system::share_stop,
+            commands::import::pick_import_files,
+            commands::import::preview_import,
+            commands::import::run_import,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

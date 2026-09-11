@@ -92,6 +92,9 @@ enum Commands {
         group: Option<String>,
         #[arg(long)]
         dry_run: bool,
+        /// Overwrite existing keys instead of skipping them.
+        #[arg(long)]
+        overwrite: bool,
     },
     Render {
         #[arg(short, long)]
@@ -147,7 +150,9 @@ async fn main() -> Result<()> {
         Commands::Run { project, cmd, env } => commands::run::execute(&project, &cmd, env.as_deref()).await,
         Commands::History { key, limit } => commands::history::execute(&key, limit),
         Commands::Revert { history_id } => commands::revert::execute(history_id),
-        Commands::Import { files, group, dry_run } => commands::import::execute(&files, group.as_deref(), dry_run),
+        Commands::Import { files, group, dry_run, overwrite } => {
+            commands::import::execute(&files, group.as_deref(), dry_run, overwrite)
+        }
         Commands::Render { target, project, env, force } => {
             commands::render::execute(target.as_deref(), &project, env.as_deref(), force)
         }

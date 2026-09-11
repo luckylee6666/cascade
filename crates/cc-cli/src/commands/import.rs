@@ -1,152 +1,86 @@
 use anyhow::Result;
 use colored::Colorize;
-use std::path::Path;
+use std::io::Read;
 
-pub fn execute(files: &[String], group: Option<&str>, dry_run: bool) -> Result<()> {
+pub fn execute(files: &[String], group: Option<&str>, dry_run: bool, overwrite: bool) -> Result<()> {
     let store = cc_store::db::Store::open_default()?;
+    let repo = cc_store::config_repo::ConfigRepo::new(&store);
 
-    use cc_store::config_repo::ConfigRepo;
-    let repo = ConfigRepo::new(&store);
-
-    let mut imported = 0;
-    let mut skipped = 0;
-
-    for file_path in files {
-        let path = Path::new(file_path);
-        if !path.exists() {
-            println!("{}", format!("File not found: {}", file_path).red());
-            skipped += 1;
-            continue;
-        }
-
-        let content = std::fs::read_to_string(path)?;
-        let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("");
-
-        let configs = match ext {
-            "env" => parse_dotenv(&content),
-            "json" => parse_json(&content)?,
-            "yaml" | "yml" => parse_yaml(&content)?,
-            _ => {
-                println!("{}", format!("Unsupported format: {}", ext).red());
-                skipped += 1;
-                continue;
-            }
-        };
-
-        for (key, value) in configs {
-            if dry_run {
-                println!("  Would import: {} = {}", key, value);
-            } else {
-                match repo.get_by_key(&key)? {
-                    Some(_) => {
-                        println!("{}", format!("  Skipped (exists): {}", key).yellow());
-                    }
-                    None => {
-                        repo.create(cc_core::config::ConfigCreate {
-                            key,
-                            value: Some(value),
-                            secret: false,
-                            group: group.map(|g| g.to_string()),
-                            description: None,
-                        })?;
-                        imported += 1;
-                    }
-                }
-            }
-        }
+    if files.is_empty() {
+        anyhow::bail!("No input files. Usage: cascade import <files...> (use `-` for stdin)");
     }
+
+    let mut all = Vec::new();
+    for f in files {
+        let (text, name) = if f == "-" {
+            let mut s = String::new();
+            std::io::stdin().read_to_string(&mut s)?;
+            (s, "stdin".to_string())
+        } else {
+            let path = std::path::Path::new(f);
+            if !path.exists() {
+                anyhow::bail!("File not found: {}", f);
+            }
+            (std::fs::read_to_string(path)?, f.clone())
+        };
+        let format = cc_core::import::format_from_path(&name);
+        let entries = cc_core::import::parse_import_text(&text, format)?;
+        println!("  parsed {}: {} entries", name.dimmed(), entries.len());
+        all.extend(entries);
+    }
+
+    let secret_of = |e: &cc_core::import::ImportEntry| {
+        e.secret.unwrap_or_else(|| {
+            cc_core::import::is_likely_secret_key(&e.key)
+                || cc_core::import::is_likely_secret_value(&e.value)
+        })
+    };
 
     if dry_run {
-        println!("\n{}", "Dry run complete".yellow());
-    } else {
-        println!("\n{} configs imported, {} skipped", imported, skipped);
-    }
-
-    Ok(())
-}
-
-fn parse_dotenv(content: &str) -> Vec<(String, String)> {
-    let mut configs = Vec::new();
-    for line in content.lines() {
-        let line = line.trim();
-        if line.is_empty() || line.starts_with('#') {
-            continue;
-        }
-        if let Some((key, value)) = line.split_once('=') {
-            let key = key.trim().to_lowercase().replace('_', ".");
-            let value = value.trim().trim_matches('"').trim_matches('\'');
-            configs.push((key, value.to_string()));
-        }
-    }
-    configs
-}
-
-fn parse_json(content: &str) -> Result<Vec<(String, String)>> {
-    let mut configs = Vec::new();
-    let value: serde_json::Value = serde_json::from_str(content)?;
-
-    fn flatten(prefix: &str, value: serde_json::Value, configs: &mut Vec<(String, String)>) {
-        match value {
-            serde_json::Value::Object(map) => {
-                for (key, val) in map {
-                    let new_key = if prefix.is_empty() { key } else { format!("{}.{}", prefix, key) };
-                    flatten(&new_key, val, configs);
-                }
-            }
-            serde_json::Value::Array(arr) => {
-                let json_str = serde_json::to_string(&arr).unwrap_or_default();
-                configs.push((prefix.to_string(), json_str));
-            }
-            _ => {
-                let val_str = match value {
-                    serde_json::Value::Null => String::new(),
-                    serde_json::Value::Bool(b) => b.to_string(),
-                    serde_json::Value::Number(n) => n.to_string(),
-                    serde_json::Value::String(s) => s,
-                    _ => String::new(),
-                };
-                configs.push((prefix.to_string(), val_str));
-            }
-        }
-    }
-
-    flatten("", value, &mut configs);
-    Ok(configs)
-}
-
-fn parse_yaml(content: &str) -> Result<Vec<(String, String)>> {
-    let mut configs = Vec::new();
-    let value: serde_yaml::Value = serde_yaml::from_str(content)?;
-
-    fn flatten(prefix: &str, value: serde_yaml::Value, configs: &mut Vec<(String, String)>) {
-        match value {
-            serde_yaml::Value::Mapping(map) => {
-                for (key, val) in map {
-                    if let serde_yaml::Value::String(key_str) = key {
-                        let new_key = if prefix.is_empty() { key_str } else { format!("{}.{}", prefix, key_str) };
-                        flatten(&new_key, val, configs);
+        let index = cc_store::import::env_key_index(&store)?;
+        for e in &all {
+            let secret = secret_of(e);
+            let status = match cc_store::import::find_existing(&repo, &index, &e.key)? {
+                Some(_) => {
+                    if overwrite {
+                        "overwrite".yellow()
+                    } else {
+                        "skip".dimmed()
                     }
                 }
-            }
-            serde_yaml::Value::Sequence(seq) => {
-                let json_str = serde_yaml::to_string(&seq).unwrap_or_default();
-                configs.push((prefix.to_string(), json_str));
-            }
-            _ => {
-                let val_str = match value {
-                    serde_yaml::Value::Null => String::new(),
-                    serde_yaml::Value::Bool(b) => b.to_string(),
-                    serde_yaml::Value::Number(n) => n.to_string(),
-                    serde_yaml::Value::String(s) => s,
-                    _ => String::new(),
-                };
-                configs.push((prefix.to_string(), val_str));
-            }
+                None => "new".green(),
+            };
+            let shown = if secret {
+                format!("{} {}", "••••••".dimmed(), "(secret)".red())
+            } else {
+                e.value.clone()
+            };
+            println!("  {:>10}  {} = {}", status, e.key, shown);
         }
+        println!(
+            "\n{} ({} entries, {} likely secrets)",
+            "Dry run: nothing written".yellow(),
+            all.len(),
+            all.iter().filter(|e| secret_of(e)).count()
+        );
+        return Ok(());
     }
 
-    flatten("", value, &mut configs);
-    Ok(configs)
+    let report = cc_store::import::import_entries(
+        &store,
+        &all,
+        &cc_store::import::ImportOptions {
+            group: group.map(|g| g.to_string()),
+            overwrite,
+        },
+    )?;
+    println!(
+        "{}",
+        format!(
+            "Imported: {} added, {} updated, {} skipped, {} secrets encrypted",
+            report.added, report.updated, report.skipped, report.secrets
+        )
+        .green()
+    );
+    Ok(())
 }
-
-

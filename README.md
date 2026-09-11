@@ -20,7 +20,7 @@
 | 值溯源 | `cascade explain` 逐层展示 base → 环境 → 项目覆盖的来源与生效值 |
 | 工具方言渲染 | 一份 MCP 配置渲染进 Qwen Code / Claude Code / Cursor，手写内容冲突跳过 |
 | 漂移检测 | `models sync` 拉 OpenAI 兼容 `/models` 端点，只增不删补库存 |
-| 导入扫描 | 扫已有 `.env`/`settings.json`/`yaml` 一键归并 |
+| 导入扫描 | 桌面端导入向导（粘贴/选文件/交给 AI）；自动识别 dotenv/JSON/YAML；疑似密钥自动加密；CLI + HTTP 导入接口 |
 | 服务端 | Token 鉴权（Bearer/header/query）、只读模式、SSE 变更推送、gRPC |
 | 桌面端 | Tauri：配置/项目/环境管理、矩阵视图、编辑/历史/回滚/导出、复制 SDK 链接 |
 
@@ -115,6 +115,23 @@ cascade secrets ls          # encrypted / plaintext 状态一览
 cascade secrets squash --yes  # 清空全部历史（旧明文不可恢复）
 ```
 
+## 导入现有配置
+
+三种方式，格式自动识别（dotenv / JSON / YAML），疑似密钥（键名含 key/token/secret/password 或值以 `sk-` 等开头）自动识别并加密：
+
+- **桌面端**：配置页 →「导入」→ 粘贴文本 / 选择文件 / 「交给 AI」（复制提示词，让你的 AI 扫描项目并收集配置）
+- **CLI**：`cascade import <files...> [--group <g>] [--overwrite] [--dry-run]`（`-` 表示从 stdin 读）
+- **HTTP**（AI/脚本友好）：`POST /api/import?group=<g>&overwrite=true`，body 为文本，需 admin token
+
+```bash
+cascade import ./.env ./settings.json --group legacy --dry-run   # 先预览
+cascade import ./.env --group legacy                              # 同名默认跳过
+curl -X POST --data-binary @.env "http://127.0.0.1:7070/api/import?group=legacy" \
+  -H "Authorization: Bearer $CASCADE_TOKEN"
+```
+
+> 嵌套映射展平到两层：`{database:{host:x}}` → `database.host`；更深对象的整体存为 JSON（如 `mcpServers.blender`），与渲染器直接兼容。
+
 ## 渲染与同步
 
 ```bash
@@ -137,7 +154,7 @@ cascade env create|list|delete
 cascade export <project> [-o file] [--format yaml|json|dotenv] [--env] [--watch] [--reveal]
 cascade run <project> [--env <e>] -- <cmd...>
 cascade history <key> | revert <history-id>
-cascade import <files...> [--group] [--dry-run]
+cascade import <files...> [--group] [--dry-run] [--overwrite]   # '-' 从 stdin 读
 cascade render --project <p> [--target ...] [--env] [--force]
 cascade models sync --url <base> [--key] [--dry-run]
 cascade secrets init|encrypt|ls|squash
