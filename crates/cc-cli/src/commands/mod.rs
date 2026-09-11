@@ -27,22 +27,22 @@ pub enum ProjectCommands {
     },
     List,
     Delete {
-        id: String,
+        project: String,
     },
     AddConfig {
-        project_id: String,
-        config_id: String,
-        env_id: String,
+        project: String,
+        config: String,
+        env: String,
         #[arg(short, long)]
         value: Option<String>,
     },
     RemoveConfig {
-        project_id: String,
-        config_id: String,
-        env_id: String,
+        project: String,
+        config: String,
+        env: String,
     },
     Configs {
-        project_id: String,
+        project: String,
     },
 }
 
@@ -55,7 +55,7 @@ pub enum EnvCommands {
     },
     List,
     Delete {
-        id: String,
+        env: String,
     },
 }
 

@@ -77,14 +77,16 @@ client = ConfigCenter.from_url("cascade://localhost:7070/project/<id>?env=prod&t
 client.get("database.host")
 ```
 
-链接在桌面端 Projects 页点复制即得。Go / TypeScript SDK 在 `sdk/` 下同名 API。
+链接在桌面端 Projects 页点复制即得。Go / Rust / Java / TypeScript SDK 在 `sdk/` 下同名 API。
 
-**安装 SDK**（尚未发布公共包仓库，从仓库目录装）：
+**安装 SDK**（公开仓库，直接装）：
 
 ```bash
-pip install ./sdk/python          # Python（已验证）
-npm install ./sdk/typescript      # TypeScript（已验证）
-# Go：go.mod 加一行 replace github.com/configcenter/sdk-go => <repo>/sdk/go
+pip install "git+https://github.com/luckylee6666/cascade.git#subdirectory=sdk/python"
+go get github.com/luckylee6666/cascade/sdk/go/cascade
+# Rust：Cargo.toml 加 cascade-sdk = { git = "https://github.com/luckylee6666/cascade" }
+# Java：git clone 后 mvn -f sdk/java install
+# TypeScript：git clone 后 npm install ./sdk/typescript（或 npm link）
 ```
 
 **零 SDK 也能用**（任何语言，纯 HTTP + JSON）：
@@ -170,7 +172,7 @@ crates/
   cc-cli/       cascade 命令行
   cc-server/    HTTP + SSE + gRPC 服务
   cc-desktop/   Tauri 桌面端（内嵌 cc-core，无 sidecar）
-sdk/            python(cascade) / go(cascade) / typescript（复制链接即用）
+sdk/            python(cascade) / go(cascade) / rust(cascade-sdk) / java(cascade-sdk) / typescript（复制链接即用）
 proto/          gRPC 定义
 ```
 

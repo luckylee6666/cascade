@@ -1,5 +1,5 @@
 # Rust
-/target
+target/
 
 # Tauri codegen
 crates/cc-desktop/gen/

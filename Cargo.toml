@@ -6,6 +6,7 @@ members = [
     "crates/cc-server",
     "crates/cc-cli",
     "crates/cc-desktop",
+    "sdk/rust",
 ]
 
 [workspace.package]

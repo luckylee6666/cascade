@@ -811,7 +811,7 @@
 
 <!-- Modal: connect -->
 <div class="modal" id="modal-connect">
-  <div class="modal-panel" style="width:640px">
+  <div class="modal-panel" style="width:660px">
     <div class="modal-head">
       <div class="modal-title">
         <span data-i18n="modal.connect.title">Connect</span>
@@ -848,6 +848,8 @@
           <button class="seg active" data-tab="ai" data-i18n="connect.tab.ai">For your AI</button>
           <button class="seg" data-tab="python">Python</button>
           <button class="seg" data-tab="go">Go</button>
+          <button class="seg" data-tab="rust">Rust</button>
+          <button class="seg" data-tab="java">Java</button>
           <button class="seg" data-tab="ts">TypeScript</button>
           <button class="seg" data-tab="curl">cURL</button>
           <button class="seg" data-tab="cli" data-i18n="connect.tab.cli">CLI</button>
@@ -1859,8 +1861,9 @@ function aiPrompt(link, projName, env, zh) {
       L.push('请用最简单的方式接入：');
       L.push('1) 纯 HTTP（零依赖）：启动时 GET 上面的地址拿全部配置，缓存在内存；');
       L.push('   定时刷新（如 30s）或失败时沿用上次结果做降级。');
-      L.push('2) Python/Node 项目如需要 SDK：向提供者索取 Cascade 仓库的 sdk/ 目录，本地安装');
-      L.push(`   （pip install "<sdk>/python" 或 npm install "<sdk>/typescript"），再用链接接入（链接已含 token）。`, '');
+      L.push('2) Python/Node 项目如需要 SDK：从 GitHub 安装');
+      L.push('   （pip install "git+https://github.com/luckylee6666/cascade.git#subdirectory=sdk/python"，');
+      L.push('   或 git clone 后 npm install ./sdk/typescript），用链接接入（链接已含 token）。', '');
       L.push('要求：');
       L.push('- 先扫描代码里写死的配置/密钥，列清单给我确认，再逐项替换');
       L.push('- 密钥不要写进代码、不要提交 git');
@@ -1874,8 +1877,9 @@ function aiPrompt(link, projName, env, zh) {
       L.push('Use the simplest option:');
       L.push('1) Plain HTTP (zero deps): GET the endpoint at startup, cache in memory;');
       L.push('   refresh periodically (e.g. every 30s) and fall back to the last good copy on failure.');
-      L.push('2) Python/Node: ask the provider for the Cascade repo sdk/ folder, install locally');
-      L.push('   (pip install "<sdk>/python" or npm install "<sdk>/typescript"), then use the link (token included).', '');
+      L.push('2) Python/Node: install the SDK from GitHub');
+      L.push('   (pip install "git+https://github.com/luckylee6666/cascade.git#subdirectory=sdk/python",');
+      L.push('   or git clone then npm install ./sdk/typescript), then use the link (token included).', '');
       L.push('Requirements:');
       L.push('- First scan for hardcoded config/secrets and show me the list; then replace item by item');
       L.push('- Never write secrets into code or commit them to git');
@@ -1971,7 +1975,7 @@ function renderConnect() {
   const snippets = {
     ai: aiPrompt(link, projName, env, zh),
     python: [
-      `pip install cascade-sdk  ${zh ? '# 未发布 PyPI 时用仓库路径' : '# or install from the repo'}`,
+      `pip install "git+https://github.com/luckylee6666/cascade.git#subdirectory=sdk/python"`,
       ``,
       `from cascade import ConfigCenter`,
       ``,
@@ -1984,7 +1988,9 @@ function renderConnect() {
       `cc.start_watch()`,
     ].join('\n'),
     go: [
-      `import cascade "github.com/configcenter/sdk-go/cascade"`,
+      `go get github.com/luckylee6666/cascade/sdk/go/cascade`,
+      ``,
+      `import cascade "github.com/luckylee6666/cascade/sdk/go/cascade"`,
       ``,
       `client, _ := cascade.FromURL("${link}")`,
       `${zh ? '// 解析后的最终值' : '// effective value'}`,
@@ -1994,7 +2000,31 @@ function renderConnect() {
       `${zh ? '// 变更订阅' : '// change subscription'}`,
       `client.Watch(func(event string) { fmt.Println("changed:", event) })`,
     ].join('\n'),
+    rust: [
+      `${zh ? '// Cargo.toml:' : '// Cargo.toml:'} cascade-sdk = { git = "https://github.com/luckylee6666/cascade" }`,
+      ``,
+      `use cascade_sdk::CascadeClient;`,
+      ``,
+      `let cc = CascadeClient::from_url("${link}")?;`,
+      `${zh ? '// 解析后的最终值' : '// effective value'}`,
+      `println!("{}", cc.get("database.host")?.unwrap_or_default());`,
+      ``,
+      `${zh ? '// 变更订阅（后台线程，断线自动重连）' : '// change subscription (background thread, auto-reconnect)'}`,
+      `let _watch = cc.watch(|event| println!("changed: {event}"));`,
+    ].join('\n'),
+    java: [
+      `${zh ? '// 从仓库安装：mvn -f sdk/java install' : '// install: mvn -f sdk/java install'}`,
+      `import io.github.luckylee6666.cascade.CascadeClient;`,
+      ``,
+      `CascadeClient cc = CascadeClient.fromUrl("${link}");`,
+      `${zh ? '// 解析后的最终值' : '// effective value'}`,
+      `System.out.println(cc.get("database.host").orElse(""));`,
+      ``,
+      `${zh ? '// 变更订阅（后台线程，断线自动重连）' : '// change subscription (daemon thread, auto-reconnect)'}`,
+      `var handle = cc.watch(event -> System.out.println("changed: " + event));`,
+    ].join('\n'),
     ts: [
+      `${zh ? '// npm install cascade-sdk（未发布时：git clone 后 npm install ./sdk/typescript）' : '// npm install cascade-sdk（or: git clone then npm install ./sdk/typescript）'}`,
       `import { ConfigCenter } from 'cascade-sdk';`,
       ``,
       `const cc = ConfigCenter.fromUrl('${link}');`,

@@ -1,3 +1,3 @@
-module github.com/configcenter/sdk-go
+module github.com/luckylee6666/cascade/sdk/go
 
 go 1.21
