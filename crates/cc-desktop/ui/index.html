@@ -1,0 +1,1975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>try{if(localStorage.getItem('cc-theme')==='dark')document.documentElement.dataset.theme='dark';}catch(e){}</script>
+<title>Cascade</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --surface-1: #ffffff;
+    --surface-2: #ffffff;
+    --surface-3: #f1f3f7;
+    --surface-4: #e7eaf0;
+    --recessed: #f7f8fa;
+    --border: rgba(15,23,42,.07);
+    --border-2: rgba(15,23,42,.13);
+    --text-1: #16181f;
+    --text-2: #545d6e;
+    --text-3: #8b93a3;
+    --accent: #4f5ae8;
+    --accent-2: #7c5cf0;
+    --accent-soft: rgba(79,90,232,.11);
+    --accent-fg: #3d47c9;
+    --accent-shadow: rgba(79,90,232,.30);
+    --danger: #d92d20;
+    --danger-soft: rgba(217,45,32,.09);
+    --danger-fg: #b42318;
+    --green: #12b76a;
+    --hover-1: rgba(15,23,42,.04);
+    --row-hover: rgba(15,23,42,.02);
+    --thead-bg: #fafbfc;
+    --glow: rgba(79,90,232,.055);
+    --backdrop: rgba(16,24,40,.34);
+    --scrollbar: rgba(15,23,42,.18);
+    --scrollbar-hover: rgba(15,23,42,.30);
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    --shadow-lg: 0 24px 60px rgba(16,24,40,.16), 0 2px 8px rgba(16,24,40,.07);
+    --shadow-sm: 0 1px 2px rgba(16,24,40,.05);
+  }
+  html[data-theme="dark"] {
+    --bg: #08090c;
+    --surface-1: #0d0f14;
+    --surface-2: #12151c;
+    --surface-3: #191d26;
+    --surface-4: #20242f;
+    --recessed: #0d0f14;
+    --border: rgba(255,255,255,.06);
+    --border-2: rgba(255,255,255,.10);
+    --text-1: #eef0f5;
+    --text-2: #a2aabc;
+    --text-3: #697183;
+    --accent: #6d7cff;
+    --accent-2: #a78bfa;
+    --accent-soft: rgba(109,124,255,.14);
+    --accent-fg: #c3c9ff;
+    --accent-shadow: rgba(109,124,255,.28);
+    --danger: #f87171;
+    --danger-soft: rgba(248,113,113,.12);
+    --danger-fg: #fecaca;
+    --green: #34d399;
+    --hover-1: rgba(255,255,255,.04);
+    --row-hover: rgba(255,255,255,.022);
+    --thead-bg: rgba(255,255,255,.015);
+    --glow: rgba(109,124,255,.07);
+    --backdrop: rgba(4,5,8,.65);
+    --scrollbar: rgba(255,255,255,.09);
+    --scrollbar-hover: rgba(255,255,255,.16);
+    --shadow-lg: 0 24px 60px rgba(0,0,0,.55), 0 2px 8px rgba(0,0,0,.4);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text-1);
+    -webkit-font-smoothing: antialiased;
+    font-size: 13px;
+    overflow: hidden;
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar);
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); background-clip: content-box; }
+
+  .app { display: flex; height: 100vh; }
+
+  /* ── Sidebar ─────────────────────────────────────────── */
+  .sidebar {
+    width: 228px;
+    flex-shrink: 0;
+    background: var(--surface-1);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 16px 12px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px 18px; }
+  .brand-mark {
+    width: 30px; height: 30px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    box-shadow: 0 4px 14px var(--accent-shadow);
+  }
+  .brand-name { font-size: 13.5px; font-weight: 600; letter-spacing: .01em; }
+  .brand-sub { font-size: 10.5px; color: var(--text-3); margin-top: 1px; }
+
+  .nav { display: flex; flex-direction: column; gap: 2px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    height: 36px; padding: 0 10px;
+    border: none; background: transparent;
+    border-radius: 8px;
+    color: var(--text-2);
+    font-family: var(--sans); font-size: 13px; font-weight: 500;
+    cursor: pointer; text-align: left; width: 100%;
+    transition: background .12s, color .12s;
+  }
+  .nav-item svg { color: var(--text-3); transition: color .12s; flex-shrink: 0; }
+  .nav-item:hover { background: var(--hover-1); color: var(--text-1); }
+  .nav-item:hover svg { color: var(--text-2); }
+  .nav-item.active {
+    background: linear-gradient(90deg, var(--accent-soft), transparent);
+    color: var(--text-1);
+  }
+  .nav-item.active svg { color: var(--accent); }
+  .nav-count {
+    margin-left: auto; font-size: 11px; color: var(--text-3);
+    background: var(--surface-3); padding: 1px 7px; border-radius: 99px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sidebar-foot { margin-top: auto; padding: 10px 10px 2px; border-top: 1px solid var(--border); }
+  .vault-path { font-family: var(--mono); font-size: 10.5px; color: var(--text-3); word-break: break-all; }
+  .version-chip {
+    display: inline-block;
+    font-size: 10px; color: var(--text-3);
+    border: 1px solid var(--border-2); border-radius: 99px; padding: 1px 8px;
+  }
+  .foot-row { display: flex; align-items: center; justify-content: space-between; margin-top: 7px; }
+  .foot-actions { display: flex; align-items: center; gap: 4px; }
+  .lang-btn {
+    height: 22px; padding: 0 8px; border-radius: 99px;
+    border: 1px solid var(--border-2); background: transparent;
+    color: var(--text-3); font-size: 10px; font-weight: 600;
+    cursor: pointer; font-family: var(--sans);
+    transition: color .12s, background .12s;
+  }
+  .lang-btn:hover { color: var(--text-1); background: var(--surface-3); }
+
+  /* ── Main ────────────────────────────────────────────── */
+  .main { flex: 1; overflow-y: auto; position: relative; }
+  .main::before {
+    content: ""; position: absolute; inset: 0 0 auto 0; height: 340px; pointer-events: none;
+    background: radial-gradient(900px 320px at 75% -20%, var(--glow), transparent 70%);
+  }
+  .page { display: none; padding: 30px 36px 48px; max-width: 1160px; position: relative; }
+  .page.active { display: block; animation: rise .18s ease; }
+  @keyframes rise { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  .page-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+  .page-title { font-size: 17px; font-weight: 650; letter-spacing: -.01em; }
+  .page-sub { color: var(--text-3); margin-top: 4px; font-size: 12.5px; }
+  .page-sub code { font-family: var(--mono); font-size: 11.5px; color: var(--text-2); background: var(--surface-3); padding: 1px 5px; border-radius: 5px; }
+
+  /* ── Buttons ─────────────────────────────────────────── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    height: 32px; padding: 0 13px;
+    border-radius: 8px; border: 1px solid transparent;
+    font-family: var(--sans); font-size: 12.5px; font-weight: 550;
+    cursor: pointer; white-space: nowrap;
+    transition: filter .12s, background .12s, border-color .12s, color .12s;
+    user-select: none;
+  }
+  .btn:active { transform: translateY(.5px); }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff;
+    box-shadow: 0 3px 12px var(--accent-shadow);
+  }
+  .btn-primary:hover { filter: brightness(1.1); }
+  .btn-ghost {
+    background: transparent; color: var(--text-2);
+    border-color: var(--border-2);
+  }
+  .btn-ghost:hover { background: var(--surface-3); color: var(--text-1); }
+  .btn-icon {
+    width: 28px; height: 28px; padding: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 7px; border: none; background: transparent;
+    color: var(--text-3); cursor: pointer;
+    transition: background .12s, color .12s;
+  }
+  .btn-icon:hover { background: var(--surface-4); color: var(--text-1); }
+  .btn-icon.danger:hover { background: var(--danger-soft); color: var(--danger); }
+  .btn-sm { height: 28px; padding: 0 10px; font-size: 12px; border-radius: 7px; }
+
+  /* ── Toolbar ─────────────────────────────────────────── */
+  .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .search { position: relative; width: 250px; }
+  .search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-3); pointer-events: none; }
+  .search input {
+    width: 100%; height: 32px; padding: 0 10px 0 32px;
+    background: var(--recessed); border: 1px solid var(--border-2);
+    border-radius: 8px; color: var(--text-1);
+    font-family: var(--sans); font-size: 12.5px;
+    transition: border-color .12s, box-shadow .12s;
+  }
+  .search input::placeholder { color: var(--text-3); }
+  .search input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .select {
+    height: 32px; padding: 0 28px 0 10px;
+    background: var(--recessed) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238b93a3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>") no-repeat right 8px center;
+    border: 1px solid var(--border-2); border-radius: 8px;
+    color: var(--text-2); font-family: var(--sans); font-size: 12.5px;
+    appearance: none; cursor: pointer;
+    transition: border-color .12s, box-shadow .12s;
+  }
+  .select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .count { margin-left: auto; color: var(--text-3); font-size: 12px; font-variant-numeric: tabular-nums; }
+
+  /* ── Table / card ────────────────────────────────────── */
+  .card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  thead th {
+    text-align: left; padding: 10px 16px;
+    font-size: 10.5px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--text-3); background: var(--thead-bg);
+    border-bottom: 1px solid var(--border);
+  }
+  tbody td {
+    padding: 0 16px; height: 46px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr { transition: background .1s; }
+  tbody tr:hover { background: var(--row-hover); }
+  .cell-key { font-family: var(--mono); font-size: 12.5px; color: var(--text-1); }
+  .cell-value { font-family: var(--mono); font-size: 12px; color: var(--text-2); }
+  .cell-value.masked { color: var(--text-3); display: flex; align-items: center; gap: 7px; }
+  .cell-value.masked svg { color: var(--text-3); }
+  .row-actions { display: flex; justify-content: flex-end; gap: 2px; opacity: 0; transition: opacity .12s; }
+  tr:hover .row-actions, tr:focus-within .row-actions { opacity: 1; }
+  .tag {
+    display: inline-block; padding: 2px 9px;
+    border-radius: 99px; font-size: 11px; font-weight: 500;
+    background: var(--surface-3); border: 1px solid var(--border-2);
+    color: var(--text-2);
+  }
+  .dim { color: var(--text-3); }
+
+  /* ── Empty state ─────────────────────────────────────── */
+  .empty { padding: 64px 20px; text-align: center; }
+  .empty-ic {
+    width: 44px; height: 44px; margin: 0 auto 14px;
+    border-radius: 12px; background: var(--surface-3);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-3);
+  }
+  .empty-title { font-size: 13.5px; font-weight: 600; color: var(--text-2); }
+  .empty-sub { margin-top: 5px; font-size: 12px; color: var(--text-3); }
+
+  /* ── Project cards ───────────────────────────────────── */
+  .project { padding: 18px 20px; border-bottom: 1px solid var(--border); }
+  .project:last-child { border-bottom: none; }
+  .project-head { display: flex; align-items: center; gap: 10px; }
+  .project-name { font-size: 14px; font-weight: 620; }
+  .project-desc { color: var(--text-3); font-size: 12px; margin-top: 2px; }
+  .project-head .spacer { flex: 1; }
+  .link-row { display: flex; align-items: center; gap: 8px; margin-top: 13px; }
+  .link-input {
+    flex: 1; height: 30px; padding: 0 10px;
+    background: var(--recessed); border: 1px solid var(--border-2);
+    border-radius: 7px; color: var(--text-2);
+    font-family: var(--mono); font-size: 11.5px;
+  }
+  .link-input:focus { outline: none; border-color: var(--accent); }
+  .project table { margin-top: 14px; border: 1px solid var(--border); border-radius: 9px; overflow: hidden; }
+  .project thead th { background: var(--thead-bg); }
+  .project tbody td { height: 38px; font-size: 12.5px; }
+  .attach-bar { display: flex; gap: 8px; margin-top: 13px; align-items: center; }
+  .attach-bar .select { flex: 0 1 auto; max-width: 220px; }
+  .input {
+    height: 32px; padding: 0 10px;
+    background: var(--recessed); border: 1px solid var(--border-2);
+    border-radius: 8px; color: var(--text-1);
+    font-family: var(--sans); font-size: 12.5px;
+    transition: border-color .12s, box-shadow .12s;
+  }
+  .input::placeholder { color: var(--text-3); }
+  .input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+  /* ── Env chain ───────────────────────────────────────── */
+  .chain { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .chain-sep { color: var(--text-3); font-size: 11px; }
+  .chain .tag.last { border-color: var(--accent-soft); background: var(--accent-soft); color: var(--accent-fg); }
+
+  /* ── Segmented view toggle ───────────────────────────── */
+  .seg-group {
+    display: inline-flex; background: var(--surface-3);
+    border: 1px solid var(--border-2); border-radius: 8px; padding: 2px; gap: 2px;
+  }
+  .seg {
+    height: 26px; padding: 0 10px; border: none; background: transparent;
+    border-radius: 6px; color: var(--text-3); font-size: 12px; font-weight: 550;
+    cursor: pointer; font-family: var(--sans);
+    display: inline-flex; align-items: center; gap: 5px;
+    transition: color .12s, background .12s;
+  }
+  .seg:hover { color: var(--text-1); }
+  .seg.active { background: var(--surface-1); color: var(--text-1); box-shadow: var(--shadow-sm); }
+
+  /* ── Matrix (config × env) ───────────────────────────── */
+  .matrix-wrap { overflow-x: auto; }
+  table.matrix { table-layout: auto; }
+  table.matrix th { white-space: nowrap; }
+  table.matrix th.m-env { text-align: left; min-width: 150px; }
+  table.matrix td.m-cell { padding: 5px 10px; height: 42px; cursor: pointer; }
+  table.matrix .cell-inner {
+    display: flex; align-items: center; gap: 6px; min-height: 24px;
+    border-radius: 6px; padding: 2px 6px; margin: -2px -6px;
+    transition: background .1s;
+  }
+  table.matrix td.m-cell:hover .cell-inner { background: var(--hover-1); }
+  .m-cell .val {
+    font-family: var(--mono); font-size: 12px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px;
+  }
+  .m-cell .val.set { color: var(--accent-fg); font-weight: 550; }
+  .m-cell .val.inherit { color: var(--text-3); }
+  .m-cell .m-lock { color: var(--text-3); flex-shrink: 0; }
+  .m-cell .m-clear { margin-left: auto; opacity: 0; }
+  .m-cell:hover .m-clear { opacity: 1; }
+  .m-cell input {
+    width: 100%; height: 26px; padding: 0 6px;
+    background: var(--recessed); border: 1px solid var(--accent);
+    border-radius: 6px; color: var(--text-1);
+    font-family: var(--mono); font-size: 12px; outline: none;
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .m-key { font-family: var(--mono); font-size: 12.5px; color: var(--text-1); }
+
+  /* ── History list ────────────────────────────────────── */
+  .hist-list { display: flex; flex-direction: column; gap: 6px; max-height: 320px; overflow-y: auto; }
+  .hist-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border: 1px solid var(--border);
+    border-radius: 8px; background: var(--surface-1);
+  }
+  .hist-action {
+    font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 99px; flex-shrink: 0;
+  }
+  .hist-action.create { color: var(--green); background: rgba(18,183,106,.1); }
+  .hist-action.update { color: var(--accent-fg); background: var(--accent-soft); }
+  .hist-action.delete { color: var(--danger); background: var(--danger-soft); }
+  .hist-val {
+    font-family: var(--mono); font-size: 12px; color: var(--text-2);
+    flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .hist-time { font-size: 11px; color: var(--text-3); white-space: nowrap; }
+
+  /* ── Export textarea ─────────────────────────────────── */
+  .export-area {
+    width: 100%; min-height: 240px;
+    background: var(--recessed); border: 1px solid var(--border-2);
+    border-radius: 8px; color: var(--text-2);
+    font-family: var(--mono); font-size: 12px;
+    padding: 10px; resize: vertical; outline: none; line-height: 1.5;
+  }
+  .export-area:focus { border-color: var(--accent); }
+
+  /* ── Code block (connect snippets) ───────────────────── */
+  .code-block {
+    background: var(--recessed); border: 1px solid var(--border-2);
+    border-radius: 8px; padding: 12px; margin: 0;
+    font-family: var(--mono); font-size: 12px; line-height: 1.6;
+    color: var(--text-1); white-space: pre; overflow: auto; max-height: 260px;
+  }
+
+  /* ── Share row (LAN share) ───────────────────────────── */
+  .share-row {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 10px 12px;
+    border: 1px solid var(--border); border-radius: 9px;
+    background: var(--surface-1);
+  }
+  .share-info { flex: 1; min-width: 160px; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-2); }
+  .share-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-3); flex-shrink: 0; }
+  .share-dot.on { background: var(--green); box-shadow: 0 0 0 3px rgba(18,183,106,.14); }
+  .share-url { font-family: var(--mono); font-size: 11.5px; color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .share-actions { display: flex; align-items: center; gap: 8px; }
+  .share-check { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); cursor: pointer; user-select: none; }
+
+  /* ── Modal ───────────────────────────────────────────── */
+  .modal {
+    display: none; position: fixed; inset: 0; z-index: 50;
+    background: var(--backdrop);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+  }
+  .modal.open { display: flex; align-items: center; justify-content: center; animation: fade .15s ease; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  .modal-panel {
+    width: 460px; max-width: calc(100vw - 48px);
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    border-radius: 15px;
+    box-shadow: var(--shadow-lg);
+    animation: pop .18s cubic-bezier(.2,.9,.3,1.2);
+  }
+  @keyframes pop { from { opacity: 0; transform: scale(.97) translateY(6px); } to { opacity: 1; transform: none; } }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 0; }
+  .modal-title { font-size: 14.5px; font-weight: 650; }
+  .modal-body { padding: 18px 20px 4px; display: flex; flex-direction: column; gap: 14px; }
+  .field label { display: block; font-size: 11.5px; font-weight: 600; color: var(--text-2); margin-bottom: 6px; }
+  .field label .opt { color: var(--text-3); font-weight: 400; }
+  .field .input, .field .select { width: 100%; }
+  .field-hint { margin-top: 6px; font-size: 11px; color: var(--text-3); }
+  .field-hint code { font-family: var(--mono); font-size: 10.5px; background: var(--surface-3); padding: 1px 4px; border-radius: 4px; }
+  .switch { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+  .switch input { display: none; }
+  .switch-track {
+    width: 34px; height: 20px; border-radius: 99px;
+    background: var(--surface-4); border: 1px solid var(--border-2);
+    position: relative; transition: background .15s, border-color .15s; flex-shrink: 0;
+  }
+  .switch-thumb {
+    position: absolute; top: 2px; left: 2px; width: 14px; height: 14px;
+    border-radius: 50%; background: var(--text-3);
+    transition: transform .15s, background .15s;
+  }
+  .switch input:checked + .switch-track {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border-color: transparent;
+  }
+  .switch input:checked + .switch-track .switch-thumb { transform: translateX(14px); background: #fff; }
+  .switch-label { font-size: 12.5px; color: var(--text-2); }
+  .modal-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 20px 20px; }
+
+  /* ── Toast ───────────────────────────────────────────── */
+  .toasts {
+    position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; gap: 8px; z-index: 100; align-items: center;
+  }
+  .toast {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface-2); border: 1px solid var(--border-2);
+    color: var(--text-1); font-size: 12.5px;
+    padding: 9px 14px; border-radius: 10px;
+    box-shadow: var(--shadow-lg);
+    animation: toast-in .2s cubic-bezier(.2,.9,.3,1.2);
+  }
+  .toast.err { color: var(--danger-fg); border-color: rgba(248,113,113,.35); }
+  .toast svg { color: var(--green); flex-shrink: 0; }
+  .toast.err svg { color: var(--danger); }
+  @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/>
+          <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/>
+          <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">Cascade</div>
+        <div class="brand-sub" data-i18n="brand.sub">shared config vault</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-item active" data-section="configs">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/>
+          <line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/>
+          <line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/>
+          <line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/>
+        </svg>
+        <span data-i18n="nav.configs">Configs</span>
+        <span class="nav-count" id="nav-count-configs">–</span>
+      </button>
+      <button class="nav-item" data-section="projects">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>
+        </svg>
+        <span data-i18n="nav.projects">Projects</span>
+        <span class="nav-count" id="nav-count-projects">–</span>
+      </button>
+      <button class="nav-item" data-section="envs">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+        </svg>
+        <span data-i18n="nav.envs">Environments</span>
+        <span class="nav-count" id="nav-count-envs">–</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="vault-path" id="vault-path">~/.cascade/vault.db</div>
+      <div class="foot-row">
+        <span class="version-chip">v0.1.0</span>
+        <span class="foot-actions">
+          <button class="lang-btn" id="lang-toggle" onclick="toggleLang()">EN</button>
+          <button class="btn-icon" id="theme-toggle" onclick="toggleTheme()"></button>
+        </span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- Configs -->
+    <section class="page active" id="page-configs">
+      <div class="page-head">
+        <div>
+          <div class="page-title" data-i18n="configs.title">Configs</div>
+          <div class="page-sub" data-i18n="configs.sub">One shared pool. Attach entries to projects, override per environment.</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-config')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          <span data-i18n="configs.new">New Config</span>
+        </button>
+      </div>
+
+      <div class="toolbar">
+        <div class="search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="config-search" data-i18n-ph="search.ph" placeholder="Search keys, values, groups…">
+        </div>
+        <select class="select" id="config-group-filter">
+          <option value="" data-i18n="groups.all">All groups</option>
+        </select>
+        <div class="seg-group">
+          <button class="seg active" id="seg-list" onclick="setView('list')" data-i18n-title="view.list">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>
+          </button>
+          <button class="seg" id="seg-matrix" onclick="setView('matrix')" data-i18n-title="view.matrix">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
+          </button>
+        </div>
+        <span class="count" id="config-count"></span>
+      </div>
+
+      <div class="card" id="list-card">
+        <table>
+          <colgroup><col style="width:31%"><col style="width:37%"><col style="width:16%"><col style="width:16%"></colgroup>
+          <thead><tr><th data-i18n="th.key">Key</th><th data-i18n="th.value">Value</th><th data-i18n="th.group">Group</th><th style="text-align:right" data-i18n="th.actions">Actions</th></tr></thead>
+          <tbody id="configs-body"></tbody>
+        </table>
+        <div id="configs-empty"></div>
+      </div>
+
+      <div class="card" id="matrix-card" style="display:none">
+        <div class="matrix-wrap">
+          <table class="matrix">
+            <thead id="matrix-head"></thead>
+            <tbody id="matrix-body"></tbody>
+          </table>
+        </div>
+        <div id="matrix-empty"></div>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section class="page" id="page-projects">
+      <div class="page-head">
+        <div>
+          <div class="page-title" data-i18n="projects.title">Projects</div>
+          <div class="page-sub" data-i18n-html="projects.sub">Copy the link into any SDK — <code>ConfigCenter.from_url(link)</code></div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-project')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          <span data-i18n="projects.new">New Project</span>
+        </button>
+      </div>
+      <div class="card" id="projects-card">
+        <div id="projects-list"></div>
+        <div id="projects-empty"></div>
+      </div>
+    </section>
+
+    <!-- Environments -->
+    <section class="page" id="page-envs">
+      <div class="page-head">
+        <div>
+          <div class="page-title" data-i18n="envs.title">Environments</div>
+          <div class="page-sub" data-i18n="envs.sub">Child environments override their parents. Cycles are rejected at creation.</div>
+        </div>
+        <button class="btn btn-primary" onclick="openEnvModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          <span data-i18n="envs.new">New Environment</span>
+        </button>
+      </div>
+      <div class="card">
+        <table>
+          <colgroup><col style="width:24%"><col style="width:60%"><col style="width:16%"></colgroup>
+          <thead><tr><th data-i18n="th.name">Name</th><th data-i18n="th.chain">Inheritance chain</th><th style="text-align:right" data-i18n="th.actions">Actions</th></tr></thead>
+          <tbody id="envs-body"></tbody>
+        </table>
+        <div id="envs-empty"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Modal: config -->
+<div class="modal" id="modal-config">
+  <div class="modal-panel">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="modal.config.title">New Config</div>
+      <button class="btn-icon" onclick="closeModal('modal-config')" aria-label="Close">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label data-i18n="field.key">Key</label>
+        <input class="input" type="text" id="config-key" placeholder="database.host" spellcheck="false">
+      </div>
+      <div class="field">
+        <label data-i18n="field.value">Value</label>
+        <input class="input" type="text" id="config-value" placeholder="localhost" spellcheck="false">
+      </div>
+      <div class="field">
+        <label><span data-i18n="field.group">Group</span> <span class="opt" data-i18n="field.optional">optional</span></label>
+        <input class="input" type="text" id="config-group" placeholder="database" spellcheck="false">
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="config-secret">
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+        <span class="switch-label" data-i18n="secret.label">Encrypt as secret</span>
+      </label>
+      <div class="field-hint" data-i18n-html="secret.hint">Stored with AES-256-GCM. Exports mask it as <code>${KEY_NAME}</code> unless <b>--reveal</b>.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-config')" data-i18n="btn.cancel">Cancel</button>
+      <button class="btn btn-primary" onclick="createConfig()" data-i18n="btn.createConfig">Create Config</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: project -->
+<div class="modal" id="modal-project">
+  <div class="modal-panel">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="modal.project.title">New Project</div>
+      <button class="btn-icon" onclick="closeModal('modal-project')" aria-label="Close">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label data-i18n="field.name">Name</label>
+        <input class="input" type="text" id="project-name" placeholder="my-app" spellcheck="false">
+      </div>
+      <div class="field">
+        <label><span data-i18n="field.description">Description</span> <span class="opt" data-i18n="field.optional">optional</span></label>
+        <input class="input" type="text" id="project-description" data-i18n-ph="ph.projectDesc" placeholder="What consumes this config?">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-project')" data-i18n="btn.cancel">Cancel</button>
+      <button class="btn btn-primary" onclick="createProject()" data-i18n="btn.createProject">Create Project</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: env -->
+<div class="modal" id="modal-env">
+  <div class="modal-panel">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="modal.env.title">New Environment</div>
+      <button class="btn-icon" onclick="closeModal('modal-env')" aria-label="Close">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label data-i18n="field.name">Name</label>
+        <input class="input" type="text" id="env-name" placeholder="prod" spellcheck="false">
+      </div>
+      <div class="field">
+        <label><span data-i18n="field.parent">Parent</span> <span class="opt" data-i18n="field.optional">optional</span></label>
+        <select class="select" id="env-parent"><option value="" data-i18n="opt.none">— none —</option></select>
+      </div>
+      <div class="field-hint" data-i18n="env.hint">Inherits and overrides its parent's values.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-env')" data-i18n="btn.cancel">Cancel</button>
+      <button class="btn btn-primary" onclick="createEnv()" data-i18n="btn.createEnv">Create Environment</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: edit config -->
+<div class="modal" id="modal-edit">
+  <div class="modal-panel">
+    <div class="modal-head">
+      <div class="modal-title" data-i18n="modal.edit.title">Edit Config</div>
+      <button class="btn-icon" onclick="closeModal('modal-edit')" aria-label="Close">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label data-i18n="field.key">Key</label>
+        <input class="input" type="text" id="edit-key" disabled>
+      </div>
+      <div class="field">
+        <label data-i18n="field.value">Value</label>
+        <input class="input" type="text" id="edit-value" spellcheck="false">
+      </div>
+      <div class="field" id="edit-secret-hint" style="display:none">
+        <div class="field-hint" data-i18n="edit.secretHint">Secret value is hidden. Enter a new value to replace it, or leave blank to keep it.</div>
+      </div>
+      <div class="field">
+        <label><span data-i18n="field.group">Group</span> <span class="opt" data-i18n="field.optional">optional</span></label>
+        <input class="input" type="text" id="edit-group" spellcheck="false">
+      </div>
+      <div class="field">
+        <label><span data-i18n="field.description">Description</span> <span class="opt" data-i18n="field.optional">optional</span></label>
+        <input class="input" type="text" id="edit-description">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-edit')" data-i18n="btn.cancel">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEditConfig()" data-i18n="btn.save">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: history -->
+<div class="modal" id="modal-history">
+  <div class="modal-panel">
+    <div class="modal-head">
+      <div class="modal-title">
+        <span data-i18n="modal.history.title">History</span>
+        <span id="history-key" style="font-family:var(--mono);font-size:12px;color:var(--text-3);margin-left:6px"></span>
+      </div>
+      <button class="btn-icon" onclick="closeModal('modal-history')" aria-label="Close">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="hist-list" id="history-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: export -->
+<div class="modal" id="modal-export">
+  <div class="modal-panel" style="width:580px">
+    <div class="modal-head">
+      <div class="modal-title">
+        <span data-i18n="modal.export.title">Export</span>
+        <span id="export-project-name" style="color:var(--text-3);margin-left:6px"></span>
+      </div>
+      <button class="btn-icon" onclick="closeModal('modal-export')" aria-label="Close">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:10px">
+        <div class="field" style="flex:1">
+          <label data-i18n="field.env">Environment</label>
+          <select class="select" id="export-env" style="width:100%"></select>
+        </div>
+        <div class="field" style="flex:1">
+          <label data-i18n="field.format">Format</label>
+          <select class="select" id="export-format" style="width:100%">
+            <option value="yaml">yaml</option>
+            <option value="json">json</option>
+            <option value="dotenv">dotenv</option>
+          </select>
+        </div>
+      </div>
+      <textarea class="export-area" id="export-content" readonly spellcheck="false"></textarea>
+      <div class="field-hint" data-i18n="export.hint">Secrets are masked as ${KEY}. Use cc export --reveal for real values.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-export')" data-i18n="btn.cancel">Cancel</button>
+      <button class="btn btn-primary" onclick="copyExport()" data-i18n="btn.copy">Copy</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: connect -->
+<div class="modal" id="modal-connect">
+  <div class="modal-panel" style="width:640px">
+    <div class="modal-head">
+      <div class="modal-title">
+        <span data-i18n="modal.connect.title">Connect</span>
+        <span id="connect-project-name" style="color:var(--text-3);margin-left:6px"></span>
+      </div>
+      <button class="btn-icon" onclick="closeModal('modal-connect')" aria-label="Close">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="share-row">
+        <div class="share-info" id="share-info"></div>
+        <div class="share-actions" id="share-actions"></div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <div class="field" style="flex:2">
+          <label data-i18n="connect.server">Server address</label>
+          <input class="input" type="text" id="connect-server" spellcheck="false" placeholder="http://localhost:7070">
+        </div>
+        <div class="field" style="flex:1">
+          <label data-i18n="field.env">Environment</label>
+          <select class="select" id="connect-env" style="width:100%"></select>
+        </div>
+      </div>
+      <div class="field">
+        <label data-i18n="connect.link">Project link</label>
+        <div class="link-row" style="margin-top:0">
+          <input class="link-input" id="connect-link" readonly onfocus="this.select()">
+          <button class="btn btn-ghost btn-sm" onclick="copyConnectLink()"><span data-i18n="btn.copy">Copy</span></button>
+        </div>
+      </div>
+      <div>
+        <div class="seg-group" id="connect-tabs" style="margin-bottom:10px">
+          <button class="seg active" data-tab="ai" data-i18n="connect.tab.ai">For your AI</button>
+          <button class="seg" data-tab="python">Python</button>
+          <button class="seg" data-tab="go">Go</button>
+          <button class="seg" data-tab="ts">TypeScript</button>
+          <button class="seg" data-tab="curl">cURL</button>
+          <button class="seg" data-tab="cli" data-i18n="connect.tab.cli">CLI</button>
+        </div>
+        <pre class="code-block" id="connect-code"></pre>
+      </div>
+      <div class="field-hint" data-i18n="connect.hint">The link is a pointer — unsure how to wire it? Switch to "For your AI" and paste the prompt into your assistant (Claude Code / Cursor / Qwen…). To share with people on your network, hit "Share on LAN" — the link picks up a token automatically.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-connect')" data-i18n="btn.cancel">Cancel</button>
+      <button class="btn btn-primary" onclick="copyConnectCode()" data-i18n="btn.copyCode">Copy code</button>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+const { invoke } = window.__TAURI__.core;
+
+/* ── i18n ──────────────────────────────────────────────── */
+const I18N = {
+  en: {
+    'brand.sub': 'config cascade · shared vault',
+    'nav.configs': 'Configs',
+    'nav.projects': 'Projects',
+    'nav.envs': 'Environments',
+    'configs.title': 'Configs',
+    'configs.sub': 'One shared pool. Attach entries to projects, override per environment.',
+    'configs.new': 'New Config',
+    'projects.title': 'Projects',
+    'projects.sub': 'Copy the link into any SDK — <code>ConfigCenter.from_url(link)</code>',
+    'projects.new': 'New Project',
+    'envs.title': 'Environments',
+    'envs.sub': 'Child environments override their parents. Cycles are rejected at creation.',
+    'envs.new': 'New Environment',
+    'search.ph': 'Search keys, values, groups…',
+    'groups.all': 'All groups',
+    'count': '{n} of {total} entries',
+    'th.key': 'Key', 'th.value': 'Value', 'th.group': 'Group', 'th.actions': 'Actions',
+    'th.config': 'Config', 'th.env': 'Env', 'th.override': 'Override',
+    'th.name': 'Name', 'th.chain': 'Inheritance chain',
+    'act.copyValue': 'Copy value', 'act.delete': 'Delete', 'act.detach': 'Detach', 'act.deleteProject': 'Delete project',
+    'empty.configs': 'No configs yet',
+    'empty.configsSub': 'Create your first entry to start the vault.',
+    'empty.noMatch': 'No matches',
+    'empty.noMatchSub': 'Try a different search or group filter.',
+    'empty.projects': 'No projects yet',
+    'empty.projectsSub': 'Create a project to bundle configs and get an SDK link.',
+    'empty.envs': 'No environments yet',
+    'empty.envsSub': 'Create base → staging → prod to layer overrides.',
+    'project.noAttach': 'No configs attached yet — attach entries to include them in this project',
+    'project.noConfigs': 'no configs in vault',
+    'project.noEnvs': 'no environments',
+    'project.overridePh': 'override value (optional)',
+    'view.list': 'List view',
+    'view.matrix': 'Matrix view (config × env)',
+    'btn.attach': 'Attach', 'btn.copyLink': 'Copy link', 'btn.cancel': 'Cancel',
+    'btn.createConfig': 'Create Config', 'btn.createProject': 'Create Project', 'btn.createEnv': 'Create Environment',
+    'btn.save': 'Save', 'btn.copy': 'Copy', 'btn.export': 'Export', 'btn.connect': 'Connect', 'btn.copyCode': 'Copy code',
+    'modal.config.title': 'New Config', 'modal.project.title': 'New Project', 'modal.env.title': 'New Environment',
+    'field.key': 'Key', 'field.value': 'Value', 'field.group': 'Group', 'field.name': 'Name',
+    'field.description': 'Description', 'field.parent': 'Parent', 'field.optional': 'optional',
+    'ph.projectDesc': 'What consumes this config?',
+    'opt.none': '— none —',
+    'secret.label': 'Encrypt as secret',
+    'secret.hint': 'Stored with AES-256-GCM. Exports mask it as <code>${KEY_NAME}</code> unless <b>--reveal</b>.',
+    'env.hint': "Inherits and overrides its parent's values.",
+    'toast.configCreated': 'Config created', 'toast.configDeleted': 'Config deleted',
+    'toast.valueCopied': 'Value copied', 'toast.copyFailed': 'Copy failed',
+    'toast.projectCreated': 'Project created', 'toast.projectDeleted': 'Project deleted',
+    'toast.attached': 'Config attached', 'toast.detached': 'Config detached',
+    'toast.linkCopied': 'SDK link copied',
+    'toast.envCreated': 'Environment created', 'toast.envDeleted': 'Environment deleted',
+    'toast.keyRequired': 'Key is required', 'toast.nameRequired': 'Name is required',
+    'toast.needConfigEnv': 'Create a config and an environment first',
+    'toast.configUpdated': 'Config updated', 'toast.envValueSet': 'Env value saved',
+    'toast.envValueCleared': 'Env value cleared', 'toast.exportCopied': 'Export copied',
+    'toast.reverted': 'Reverted',
+    'act.edit': 'Edit', 'act.history': 'History',
+    'modal.edit.title': 'Edit Config', 'modal.history.title': 'History', 'modal.export.title': 'Export',
+    'modal.connect.title': 'Connect', 'connect.server': 'Server address', 'connect.link': 'Project link',
+    'connect.tab.cli': 'CLI', 'connect.tab.ai': 'For your AI',
+    'connect.hint': 'The link is a pointer — unsure how to wire it? Switch to "For your AI" and paste the prompt into your assistant (Claude Code / Cursor / Qwen…). To share with people on your network, hit "Share on LAN" — the link picks up a token automatically.',
+    'toast.codeCopied': 'Code copied',
+    'share.notRunning': 'Service not running', 'share.runningLocal': 'Local service running',
+    'share.runningLan': 'Shared on LAN', 'share.stop': 'Stop sharing',
+    'share.localBtn': 'Start local', 'share.lanBtn': 'Share on LAN',
+    'share.reveal': 'Allow secret reveal',
+    'toast.shareStarted': 'Service started', 'toast.shareStopped': 'Sharing stopped',
+    'field.format': 'Format', 'field.env': 'Environment',
+    'edit.secretHint': 'Secret value is hidden. Enter a new value to replace it, or leave blank to keep it.',
+    'export.hint': 'Secrets are masked as ${KEY}. Use cc export --reveal for real values.',
+    'history.empty': 'No history yet', 'history.revert': 'Revert to this', 'confirm.revert': 'Revert to this version?',
+    'matrix.inherited': 'Inherited — click to set an env-specific value',
+    'matrix.override': 'Env-specific value — click to edit',
+    'matrix.clear': 'Clear env value (fall back to inherit)',
+    'matrix.empty': 'No configs to show',
+    'confirm.deleteConfig': 'Delete this config?',
+    'confirm.deleteProject': 'Delete this project and all its attachments?',
+    'confirm.deleteEnv': 'Delete this environment?',
+    'theme.toDark': 'Switch to dark', 'theme.toLight': 'Switch to light',
+    'lang.title': 'Switch language'
+  },
+  zh: {
+    'brand.sub': '级联配置 · 共享库',
+    'nav.configs': '配置',
+    'nav.projects': '项目',
+    'nav.envs': '环境',
+    'configs.title': '配置',
+    'configs.sub': '一个共享配置池，按项目组合归属，按环境覆盖。',
+    'configs.new': '新建配置',
+    'projects.title': '项目',
+    'projects.sub': '复制链接接入任意 SDK — <code>ConfigCenter.from_url(link)</code>',
+    'projects.new': '新建项目',
+    'envs.title': '环境',
+    'envs.sub': '子环境覆盖父环境的值，成环会在创建时被拒绝。',
+    'envs.new': '新建环境',
+    'search.ph': '搜索键、值、分组…',
+    'groups.all': '全部分组',
+    'count': '显示 {n} / {total} 条',
+    'th.key': '键', 'th.value': '值', 'th.group': '分组', 'th.actions': '操作',
+    'th.config': '配置', 'th.env': '环境', 'th.override': '覆盖值',
+    'th.name': '名称', 'th.chain': '继承链',
+    'act.copyValue': '复制值', 'act.delete': '删除', 'act.detach': '解除', 'act.deleteProject': '删除项目',
+    'empty.configs': '还没有配置',
+    'empty.configsSub': '创建第一条，开始建立你的配置库。',
+    'empty.noMatch': '没有匹配结果',
+    'empty.noMatchSub': '换个关键词或分组试试。',
+    'empty.projects': '还没有项目',
+    'empty.projectsSub': '创建项目来组合配置，并获取 SDK 链接。',
+    'empty.envs': '还没有环境',
+    'empty.envsSub': '创建 base → staging → prod 做分层覆盖。',
+    'project.noAttach': '还没有挂载配置 — 挂载后才会出现在该项目的导出里',
+    'project.noConfigs': '配置池为空',
+    'project.noEnvs': '没有环境',
+    'project.overridePh': '覆盖值（可选）',
+    'view.list': '列表视图',
+    'view.matrix': '矩阵视图（配置 × 环境）',
+    'btn.attach': '挂载', 'btn.copyLink': '复制链接', 'btn.cancel': '取消',
+    'btn.createConfig': '创建配置', 'btn.createProject': '创建项目', 'btn.createEnv': '创建环境',
+    'btn.save': '保存', 'btn.copy': '复制', 'btn.export': '导出', 'btn.connect': '接入', 'btn.copyCode': '复制代码',
+    'modal.config.title': '新建配置', 'modal.project.title': '新建项目', 'modal.env.title': '新建环境',
+    'field.key': '键', 'field.value': '值', 'field.group': '分组', 'field.name': '名称',
+    'field.description': '描述', 'field.parent': '父环境', 'field.optional': '可选',
+    'ph.projectDesc': '谁会使用这份配置？',
+    'opt.none': '— 无 —',
+    'secret.label': '加密存储为密钥',
+    'secret.hint': '使用 AES-256-GCM 加密存储；导出时默认打码为 <code>${KEY_NAME}</code>，除非使用 <b>--reveal</b>。',
+    'env.hint': '继承并覆盖父环境的值。',
+    'toast.configCreated': '配置已创建', 'toast.configDeleted': '配置已删除',
+    'toast.valueCopied': '值已复制', 'toast.copyFailed': '复制失败',
+    'toast.projectCreated': '项目已创建', 'toast.projectDeleted': '项目已删除',
+    'toast.attached': '配置已挂载', 'toast.detached': '配置已解除',
+    'toast.linkCopied': 'SDK 链接已复制',
+    'toast.envCreated': '环境已创建', 'toast.envDeleted': '环境已删除',
+    'toast.keyRequired': '请填写键',
+    'toast.nameRequired': '请填写名称',
+    'toast.needConfigEnv': '请先创建配置和环境',
+    'toast.configUpdated': '配置已更新', 'toast.envValueSet': '环境值已保存',
+    'toast.envValueCleared': '环境值已清除', 'toast.exportCopied': '导出内容已复制',
+    'toast.reverted': '已回滚',
+    'act.edit': '编辑', 'act.history': '历史',
+    'modal.edit.title': '编辑配置', 'modal.history.title': '变更历史', 'modal.export.title': '导出',
+    'modal.connect.title': '接入', 'connect.server': '服务地址', 'connect.link': '项目链接',
+    'connect.tab.cli': 'CLI', 'connect.tab.ai': '交给 AI',
+    'connect.hint': '链接只是坐标：不确定怎么接？切到「交给 AI」，把提示词粘贴给你的 AI 助手（Claude Code / Cursor / Qwen…）。要让同一网络的人也能用，点「局域网分享」，链接会自动带上令牌。',
+    'toast.codeCopied': '代码已复制',
+    'share.notRunning': '服务未启动', 'share.runningLocal': '本地服务运行中',
+    'share.runningLan': '局域网分享中', 'share.stop': '停止分享',
+    'share.localBtn': '本地启动', 'share.lanBtn': '局域网分享',
+    'share.reveal': '允许读取密钥真值',
+    'toast.shareStarted': '服务已启动', 'toast.shareStopped': '已停止分享',
+    'field.format': '格式', 'field.env': '环境',
+    'edit.secretHint': '密钥值已隐藏。输入新值以替换，留空则保持不变。',
+    'export.hint': '密钥以 ${KEY} 打码。需要真值请用 cc export --reveal。',
+    'history.empty': '暂无历史记录', 'history.revert': '回滚到此版本', 'confirm.revert': '确定回滚到此版本？',
+    'matrix.inherited': '继承值 — 点击设置环境专属值',
+    'matrix.override': '环境专属值 — 点击编辑',
+    'matrix.clear': '清除环境值（回退为继承）',
+    'matrix.empty': '暂无配置可展示',
+    'confirm.deleteConfig': '确定删除这条配置？',
+    'confirm.deleteProject': '确定删除该项目及其全部挂载？',
+    'confirm.deleteEnv': '确定删除该环境？',
+    'theme.toDark': '切换到深色', 'theme.toLight': '切换到浅色',
+    'lang.title': '切换语言'
+  }
+};
+
+const state = { configs: [], projects: [], envs: [], envValues: [], search: '', group: '', lang: 'en', view: 'list', toolchain: null };
+
+function t(key, params) {
+  const dict = I18N[state.lang] || I18N.en;
+  let s = dict[key] != null ? dict[key] : (I18N.en[key] != null ? I18N.en[key] : key);
+  if (params) for (const [k, v] of Object.entries(params)) s = s.split(`{${k}}`).join(v);
+  return s;
+}
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+}
+
+/* ── icons ─────────────────────────────────────────────── */
+const PATHS = {
+  trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+  copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+  lock: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  database: '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>',
+  folder: '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
+  layers: '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+  link: '<path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+  moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+  pencil: '<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+  rotate: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+  code: '<path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/>'
+};
+const icon = (name, size = 15) =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${PATHS[name] || ''}</svg>`;
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+
+/* ── toast ─────────────────────────────────────────────── */
+function toast(msg, kind = 'ok') {
+  const el = document.createElement('div');
+  el.className = 'toast' + (kind === 'err' ? ' err' : '');
+  el.innerHTML = (kind === 'err' ? icon('x', 14) : icon('check', 14)) + `<span>${esc(msg)}</span>`;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .25s'; }, 1900);
+  setTimeout(() => el.remove(), 2200);
+}
+
+/* ── modal helpers ─────────────────────────────────────── */
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  const first = document.querySelector(`#${id} input`);
+  if (first) setTimeout(() => first.focus(), 40);
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open'));
+});
+document.querySelectorAll('.modal').forEach(m => {
+  m.addEventListener('mousedown', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+/* ── nav ───────────────────────────────────────────────── */
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => showSection(item.dataset.section));
+});
+function showSection(name) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.section === name));
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === `page-${name}`));
+  if (name === 'configs') loadConfigs();
+  if (name === 'projects') loadProjects();
+  if (name === 'envs') loadEnvs();
+}
+
+/* ── configs ───────────────────────────────────────────── */
+async function loadConfigs() {
+  try {
+    const [configs, envs, envValues] = await Promise.all([
+      invoke('list_configs'), invoke('list_envs'), invoke('list_env_values')
+    ]);
+    state.configs = configs;
+    state.envs = envs;
+    state.envValues = envValues;
+    document.getElementById('nav-count-envs').textContent = envs.length;
+    const groups = [...new Set(state.configs.map(c => c.group).filter(Boolean))].sort();
+    const sel = document.getElementById('config-group-filter');
+    const keep = state.group;
+    sel.innerHTML = `<option value="">${esc(t('groups.all'))}</option>` +
+      groups.map(g => `<option value="${esc(g)}"${g === keep ? ' selected' : ''}>${esc(g)}</option>`).join('');
+    document.getElementById('nav-count-configs').textContent = state.configs.length;
+    renderConfigs();
+  } catch (e) { toast(String(e), 'err'); }
+}
+
+function filteredConfigs() {
+  const q = state.search.toLowerCase();
+  return state.configs.filter(c =>
+    (!state.group || c.group === state.group) &&
+    (!q || c.key.toLowerCase().includes(q) || (c.value || '').toLowerCase().includes(q) || (c.group || '').toLowerCase().includes(q))
+  );
+}
+
+function setView(v) {
+  state.view = v;
+  document.getElementById('seg-list').classList.toggle('active', v === 'list');
+  document.getElementById('seg-matrix').classList.toggle('active', v === 'matrix');
+  document.getElementById('list-card').style.display = v === 'list' ? '' : 'none';
+  document.getElementById('matrix-card').style.display = v === 'matrix' ? '' : 'none';
+  renderConfigs();
+}
+
+function renderConfigs() {
+  if (state.view === 'matrix') { renderMatrix(); return; }
+  const rows = filteredConfigs();
+  const body = document.getElementById('configs-body');
+  const empty = document.getElementById('configs-empty');
+  document.getElementById('config-count').textContent = t('count', { n: rows.length, total: state.configs.length });
+
+  if (!rows.length) {
+    body.innerHTML = '';
+    empty.innerHTML = state.configs.length
+      ? `<div class="empty"><div class="empty-ic">${icon('database', 20)}</div><div class="empty-title">${esc(t('empty.noMatch'))}</div><div class="empty-sub">${esc(t('empty.noMatchSub'))}</div></div>`
+      : `<div class="empty"><div class="empty-ic">${icon('database', 20)}</div><div class="empty-title">${esc(t('empty.configs'))}</div><div class="empty-sub">${esc(t('empty.configsSub'))}</div></div>`;
+    return;
+  }
+  empty.innerHTML = '';
+  body.innerHTML = rows.map(c => `
+    <tr>
+      <td class="cell-key" title="${esc(c.key)}">${esc(c.key)}</td>
+      <td class="${c.secret ? 'cell-value masked' : 'cell-value'}" title="${c.secret ? 'encrypted' : esc(c.value || '')}">
+        ${c.secret ? icon('lock', 12) + '<span>••••••••</span>' : esc(c.value ?? '') || '<span class="dim">—</span>'}
+      </td>
+      <td>${c.group ? `<span class="tag">${esc(c.group)}</span>` : '<span class="dim">—</span>'}</td>
+      <td>
+        <div class="row-actions">
+          ${c.secret ? '' : `<button class="btn-icon" title="${esc(t('act.copyValue'))}" onclick="copyValue('${c.id}')">${icon('copy', 14)}</button>`}
+          <button class="btn-icon" title="${esc(t('act.edit'))}" onclick="openEditConfig('${c.id}')">${icon('pencil', 14)}</button>
+          <button class="btn-icon" title="${esc(t('act.history'))}" onclick="openHistory('${c.id}')">${icon('clock', 14)}</button>
+          <button class="btn-icon danger" title="${esc(t('act.delete'))}" onclick="deleteConfig('${c.id}')">${icon('trash', 14)}</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+/* ── matrix (config × env) ─────────────────────────────── */
+function envDepth(env) {
+  const byId = Object.fromEntries(state.envs.map(e => [e.id, e]));
+  let depth = 0, cur = env, guard = 0;
+  while (cur && cur.parent_id && byId[cur.parent_id] && guard++ < 32) { depth++; cur = byId[cur.parent_id]; }
+  return depth;
+}
+
+function envChainIds(env) {
+  const byId = Object.fromEntries(state.envs.map(e => [e.id, e]));
+  const ids = [];
+  let cur = env, guard = 0;
+  while (cur && guard++ < 32) { ids.unshift(cur.id); cur = cur.parent_id ? byId[cur.parent_id] : null; }
+  return ids;
+}
+
+function renderMatrix() {
+  const rows = filteredConfigs();
+  const envs = [...state.envs].sort((a, b) => envDepth(a) - envDepth(b) || a.name.localeCompare(b.name));
+  const head = document.getElementById('matrix-head');
+  const body = document.getElementById('matrix-body');
+  const empty = document.getElementById('matrix-empty');
+  document.getElementById('config-count').textContent = t('count', { n: rows.length, total: state.configs.length });
+
+  if (!rows.length || !envs.length) {
+    head.innerHTML = '';
+    body.innerHTML = '';
+    empty.innerHTML = `<div class="empty"><div class="empty-ic">${icon('database', 20)}</div><div class="empty-title">${esc(t('matrix.empty'))}</div></div>`;
+    return;
+  }
+  empty.innerHTML = '';
+  head.innerHTML = `<tr><th>${esc(t('th.key'))}</th>${envs.map(e => `<th class="m-env">${esc(e.name)}</th>`).join('')}</tr>`;
+
+  body.innerHTML = rows.map(c => {
+    const cells = envs.map(env => {
+      const chain = envChainIds(env);
+      const envVal = state.envValues.find(v => v.config_id === c.id && v.env_id === env.id);
+      // Inherited: last env value along the chain, else base value.
+      let inherited = c.value ?? '';
+      for (const id of chain) {
+        const v = state.envValues.find(x => x.config_id === c.id && x.env_id === id);
+        if (v) inherited = v.value ?? '';
+      }
+      const isSet = !!envVal;
+      const shown = isSet ? (envVal.value ?? '') : inherited;
+      const tip = isSet ? t('matrix.override') : t('matrix.inherited');
+      const display = c.secret
+        ? `${icon('lock', 11)}<span class="val ${isSet ? 'set' : 'inherit'}">••••••••</span>`
+        : `<span class="val ${isSet ? 'set' : 'inherit'}" title="${esc(shown)}">${esc(shown) || '—'}</span>`;
+      const clear = isSet
+        ? `<button class="btn-icon m-clear" title="${esc(t('matrix.clear'))}" onclick="event.stopPropagation(); clearEnvValue('${c.id}','${env.id}')">${icon('x', 12)}</button>`
+        : '';
+      return `<td class="m-cell" data-config="${c.id}" data-env="${env.id}" data-secret="${c.secret}" data-set="${isSet}" title="${esc(tip)}"><div class="cell-inner">${display}${clear}</div></td>`;
+    }).join('');
+    return `<tr><td class="m-key">${esc(c.key)}</td>${cells}</tr>`;
+  }).join('');
+}
+
+document.getElementById('matrix-body').addEventListener('click', e => {
+  const td = e.target.closest('td.m-cell');
+  if (!td || td.querySelector('input')) return;
+  const inner = td.querySelector('.cell-inner');
+  const wasSet = td.dataset.set === 'true';
+  const existing = state.envValues.find(v => v.config_id === td.dataset.config && v.env_id === td.dataset.env);
+  const current = wasSet && existing ? (existing.value ?? '') : '';
+  const secret = td.dataset.secret === 'true';
+  inner.innerHTML = `<input type="text" value="${secret ? '' : esc(current)}" placeholder="${secret ? '••••••' : ''}" spellcheck="false">`;
+  const input = inner.querySelector('input');
+  input.focus();
+  input.select();
+  let done = false;
+  const finish = async (save) => {
+    if (done) return;
+    done = true;
+    if (!save) { renderMatrix(); return; }
+    const val = input.value;
+    const configId = td.dataset.config;
+    const envId = td.dataset.env;
+    try {
+      if (val === '') {
+        if (wasSet) {
+          await invoke('delete_env_value', { config_id: configId, env_id: envId });
+          toast(t('toast.envValueCleared'));
+        }
+      } else {
+        await invoke('set_env_value', { config_id: configId, env_id: envId, value: val });
+        toast(t('toast.envValueSet'));
+      }
+      await loadConfigs();
+    } catch (err) { toast(String(err), 'err'); renderMatrix(); }
+  };
+  input.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter') { ev.preventDefault(); finish(true); }
+    if (ev.key === 'Escape') { ev.preventDefault(); finish(false); }
+  });
+  input.addEventListener('blur', () => finish(true));
+});
+
+async function clearEnvValue(configId, envId) {
+  try {
+    await invoke('delete_env_value', { config_id: configId, env_id: envId });
+    toast(t('toast.envValueCleared'));
+    loadConfigs();
+  } catch (e) { toast(String(e), 'err'); }
+}
+
+/* ── edit / history ────────────────────────────────────── */
+let editingId = null;
+function openEditConfig(id) {
+  const c = state.configs.find(x => x.id === id);
+  if (!c) return;
+  editingId = id;
+  document.getElementById('edit-key').value = c.key;
+  document.getElementById('edit-value').value = c.secret ? '' : (c.value ?? '');
+  document.getElementById('edit-value').placeholder = c.secret ? '••••••••' : '';
+  document.getElementById('edit-group').value = c.group ?? '';
+  document.getElementById('edit-description').value = c.description ?? '';
+  document.getElementById('edit-secret-hint').style.display = c.secret ? '' : 'none';
+  openModal('modal-edit');
+}
+
+async function saveEditConfig() {
+  if (!editingId) return;
+  const c = state.configs.find(x => x.id === editingId);
+  const valueInput = document.getElementById('edit-value').value;
+  const group = document.getElementById('edit-group').value.trim();
+  const description = document.getElementById('edit-description').value.trim();
+  const payload = {
+    id: editingId,
+    value: c && c.secret ? (valueInput === '' ? null : valueInput) : valueInput,
+    secret: null,
+    group: group || null,
+    description: description || null,
+  };
+  try {
+    await invoke('update_config', payload);
+    closeModal('modal-edit');
+    toast(t('toast.configUpdated'));
+    loadConfigs();
+  } catch (e) { toast(String(e), 'err'); }
+}
+
+async function openHistory(id) {
+  const c = state.configs.find(x => x.id === id);
+  document.getElementById('history-key').textContent = c ? c.key : '';
+  const list = document.getElementById('history-list');
+  list.innerHTML = '';
+  openModal('modal-history');
+  try {
+    const items = await invoke('list_config_history', { config_id: id });
+    if (!items.length) {
+      list.innerHTML = `<div class="dim" style="text-align:center;padding:18px 0">${esc(t('history.empty'))}</div>`;
+      return;
+    }
+    list.innerHTML = items.map(h => {
+      const action = String(h.action).toLowerCase();
+      const secret = c && c.secret;
+      const val = h.value == null ? '—' : (secret ? '••••••••' : String(h.value));
+      const time = String(h.created_at).replace('T', ' ').slice(0, 16);
+      const revert = action === 'delete' ? '' :
+        `<button class="btn-icon" title="${esc(t('history.revert'))}" onclick="revertHistory(${h.id})">${icon('rotate', 13)}</button>`;
+      return `<div class="hist-row">
+        <span class="hist-action ${action}">${esc(action)}</span>
+        <span class="hist-val" title="${esc(val)}">${esc(val)}</span>
+        <span class="hist-time">${esc(time)}</span>
+        ${revert}
+      </div>`;
+    }).join('');
+  } catch (e) { toast(String(e), 'err'); }
+}
+
+async function revertHistory(historyId) {
+  if (!confirm(t('confirm.revert'))) return;
+  try {
+    await invoke('revert_config', { history_id: historyId });
+    toast(t('toast.reverted'));
+    closeModal('modal-history');
+    loadConfigs();
+  } catch (e) { toast(String(e), 'err'); }
+}
+
+/* ── export (project) ──────────────────────────────────── */
+let exportingProject = null;
+async function openExport(projectId) {
+  const p = state.projects.find(x => x.id === projectId);
+  exportingProject = projectId;
+  document.getElementById('export-project-name').textContent = p ? p.name : '';
+  const envSel = document.getElementById('export-env');
+  envSel.innerHTML = state.envs.map(e => `<option value="${e.id}">${esc(e.name)}</option>`).join('');
+  const base = state.envs.find(e => e.name === 'base');
+  if (base) envSel.value = base.id;
+  openModal('modal-export');
+  await refreshExport();
+}
+
+async function refreshExport() {
+  if (!exportingProject) return;
+  const envId = document.getElementById('export-env').value;
+  const format = document.getElementById('export-format').value;
+  if (!envId) return;
+  try {
+    const content = await invoke('export_project', { project_id: exportingProject, env_id: envId, format });
+    document.getElementById('export-content').value = content;
+  } catch (e) { toast(String(e), 'err'); }
+}
+
+document.getElementById('export-env').addEventListener('change', refreshExport);
+document.getElementById('export-format').addEventListener('change', refreshExport);
+
+async function copyExport() {
+  const content = document.getElementById('export-content').value;
+  try { await navigator.clipboard.writeText(content); toast(t('toast.exportCopied')); }
+  catch { toast(t('toast.copyFailed'), 'err'); }
+}
+
+/* ── config CRUD ───────────────────────────────────────── */
+document.getElementById('config-search').addEventListener('input', e => { state.search = e.target.value; renderConfigs(); });
+document.getElementById('config-group-filter').addEventListener('change', e => { state.group = e.target.value; renderConfigs(); });
+
+async function createConfig() {
+  const key = document.getElementById('config-key').value.trim();
+  const value = document.getElementById('config-value').value;
+  const group = document.getElementById('config-group').value.trim();
+  const secret = document.getElementById('config-secret').checked;
+  if (!key) { toast(t('toast.keyRequired'), 'err'); return; }
+  try {
+    await invoke('create_config', { key, value: value || null, secret, group: group || null, description: null });
+    closeModal('modal-config');
+    ['config-key','config-value','config-group'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('config-secret').checked = false;
+    toast(t('toast.configCreated'));
+    loadConfigs();
+  } catch (e) { toast(String(e), 'err'); }
+}
+
+async function deleteConfig(id) {
+  if (!confirm(t('confirm.deleteConfig'))) return;
+  try { await invoke('delete_config', { id }); toast(t('toast.configDeleted')); loadConfigs(); }
+  catch (e) { toast(String(e), 'err'); }
+}
+
+async function copyValue(id) {
+  const c = state.configs.find(x => x.id === id);
+  if (!c || c.value == null) return;
+  try { await navigator.clipboard.writeText(c.value); toast(t('toast.valueCopied')); }
+  catch { toast(t('toast.copyFailed'), 'err'); }
+}
+
+/* ── projects ──────────────────────────────────────────── */
+async function loadProjects() {
+  try {
+    const [configs, envs, projects] = await Promise.all([
+      invoke('list_configs'), invoke('list_envs'), invoke('list_projects')
+    ]);
+    state.configs = configs; state.envs = envs; state.projects = projects;
+    document.getElementById('nav-count-configs').textContent = configs.length;
+    document.getElementById('nav-count-envs').textContent = envs.length;
+    document.getElementById('nav-count-projects').textContent = projects.length;
+
+    const list = document.getElementById('projects-list');
+    const empty = document.getElementById('projects-empty');
+    if (!projects.length) {
+      list.innerHTML = '';
+      empty.innerHTML = `<div class="empty"><div class="empty-ic">${icon('folder', 20)}</div><div class="empty-title">${esc(t('empty.projects'))}</div><div class="empty-sub">${esc(t('empty.projectsSub'))}</div></div>`;
+      return;
+    }
+    empty.innerHTML = '';
+    list.innerHTML = '';
+    for (const p of projects) {
+      const pcs = await invoke('list_project_configs', { project_id: p.id });
+      const div = document.createElement('div');
+      div.className = 'project';
+      const attachRows = pcs.map(pc => {
+        const cfg = state.configs.find(c => c.id === pc.config_id);
+        const env = state.envs.find(e => e.id === pc.env_id);
+        return `<tr>
+          <td class="cell-key">${esc(cfg ? cfg.key : pc.config_id)}</td>
+          <td>${env ? `<span class="tag">${esc(env.name)}</span>` : `<span class="dim">${esc(pc.env_id)}</span>`}</td>
+          <td class="cell-value">${pc.override_value != null ? esc(pc.override_value) : '<span class="dim">—</span>'}</td>
+          <td><div class="row-actions">
+            <button class="btn-icon danger" title="${esc(t('act.detach'))}" onclick="removeProjectConfig('${p.id}','${pc.config_id}','${pc.env_id}')">${icon('trash', 14)}</button>
+          </div></td>
+        </tr>`;
+      }).join('');
+      const cfgOpts = state.configs.map(c => `<option value="${c.id}">${esc(c.key)}</option>`).join('');
+      const envOpts = state.envs.map(e => `<option value="${e.id}">${esc(e.name)}</option>`).join('');
+      div.innerHTML = `
+        <div class="project-head">
+          <div>
+            <div class="project-name">${esc(p.name)}</div>
+            ${p.description ? `<div class="project-desc">${esc(p.description)}</div>` : ''}
+          </div>
+          <div class="spacer"></div>
+          <button class="btn-icon danger" title="${esc(t('act.deleteProject'))}" onclick="deleteProject('${p.id}')">${icon('trash', 14)}</button>
+        </div>
+        <div class="link-row">
+          <input class="link-input" readonly value="${esc(sdkLink(p.id))}" id="link-${p.id}" onfocus="this.select()">
+          <button class="btn btn-ghost btn-sm" onclick="openConnect('${p.id}')">${icon('code', 13)} ${esc(t('btn.connect'))}</button>
+          <button class="btn btn-ghost btn-sm" onclick="openExport('${p.id}')">${icon('download', 13)} ${esc(t('btn.export'))}</button>
+        </div>
+        <table>
+          <colgroup><col style="width:34%"><col style="width:18%"><col style="width:36%"><col style="width:12%"></colgroup>
+          <thead><tr><th>${esc(t('th.config'))}</th><th>${esc(t('th.env'))}</th><th>${esc(t('th.override'))}</th><th></th></tr></thead>
+          <tbody>${attachRows || `<tr><td colspan="4" style="color:var(--text-3);text-align:center;height:52px">${esc(t('project.noAttach'))}</td></tr>`}</tbody>
+        </table>
+        <div class="attach-bar">
+          <select class="select" id="add-cfg-${p.id}">${cfgOpts || `<option value="">${esc(t('project.noConfigs'))}</option>`}</select>
+          <select class="select" id="add-env-${p.id}">${envOpts || `<option value="">${esc(t('project.noEnvs'))}</option>`}</select>
+          <input class="input" style="flex:1" id="add-val-${p.id}" placeholder="${esc(t('project.overridePh'))}" spellcheck="false">
+          <button class="btn btn-primary btn-sm" onclick="addProjectConfig('${p.id}')">${esc(t('btn.attach'))}</button>
+        </div>`;
+      list.appendChild(div);
+    }
+  } catch (e) { toast(String(e), 'err'); }
+}
+
+function sdkLink(projectId) {
+  return `cascade://localhost:7070/project/${projectId}`;
+}
+
+async function createProject() {
+  const name = document.getElementById('project-name').value.trim();
+  const description = document.getElementById('project-description').value.trim() || null;
+  if (!name) { toast(t('toast.nameRequired'), 'err'); return; }
+  try {
+    await invoke('create_project', { name, description });
+    closeModal('modal-project');
+    document.getElementById('project-name').value = '';
+    document.getElementById('project-description').value = '';
+    toast(t('toast.projectCreated'));
+    loadProjects();
+  } catch (e) { toast(String(e), 'err'); }
+}
+
+async function deleteProject(id) {
+  if (!confirm(t('confirm.deleteProject'))) return;
+  try { await invoke('delete_project', { id }); toast(t('toast.projectDeleted')); loadProjects(); }
+  catch (e) { toast(String(e), 'err'); }
+}
+
+async function addProjectConfig(project_id) {
+  const config_id = document.getElementById(`add-cfg-${project_id}`).value;
+  const env_id = document.getElementById(`add-env-${project_id}`).value;
+  const v = document.getElementById(`add-val-${project_id}`).value;
+  if (!config_id || !env_id) { toast(t('toast.needConfigEnv'), 'err'); return; }
+  try {
+    await invoke('add_project_config', { project_id, config_id, env_id, override_value: v || null });
+    toast(t('toast.attached'));
+    loadProjects();
+  } catch (e) { toast(String(e), 'err'); }
+}
+
+async function removeProjectConfig(project_id, config_id, env_id) {
+  try {
+    await invoke('remove_project_config', { project_id, config_id, env_id });
+    toast(t('toast.detached'));
+    loadProjects();
+  } catch (e) { toast(String(e), 'err'); }
+}
+
+/* ── connect (onboarding snippets) ─────────────────────── */
+let connectProject = null;
+let connectTab = 'ai';
+let shareInfo = null;
+let connectToken = null;
+
+/* ── LAN share ─────────────────────────────────────────── */
+function renderShare() {
+  const info = document.getElementById('share-info');
+  const actions = document.getElementById('share-actions');
+  if (shareInfo) {
+    const label = shareInfo.lan ? t('share.runningLan') : t('share.runningLocal');
+    info.innerHTML = `<span class="share-dot on"></span><span>${esc(label)}</span><span class="share-url" title="${esc(shareInfo.url)}">${esc(shareInfo.url)}</span>`;
+    actions.innerHTML = `<button class="btn btn-ghost btn-sm" onclick="stopShare()">${esc(t('share.stop'))}</button>`;
+  } else {
+    info.innerHTML = `<span class="share-dot"></span><span>${esc(t('share.notRunning'))}</span>`;
+    actions.innerHTML = `
+      <label class="share-check"><input type="checkbox" id="share-reveal"> ${esc(t('share.reveal'))}</label>
+      <button class="btn btn-ghost btn-sm" onclick="shareLocal()">${esc(t('share.localBtn'))}</button>
+      <button class="btn btn-primary btn-sm" onclick="shareLan()">${esc(t('share.lanBtn'))}</button>`;
+  }
+}
+
+async function refreshShare() {
+  try { shareInfo = await invoke('share_status'); } catch (e) { shareInfo = null; }
+  connectToken = shareInfo && shareInfo.token ? shareInfo.token : null;
+  document.getElementById('connect-server').value = shareInfo ? shareInfo.url : storedServer();
+  renderShare();
+  renderConnect();
+}
+
+async function shareLocal() {
+  try {
+    shareInfo = await invoke('share_start', { mode: 'local', allow_reveal: false });
+    toast(t('toast.shareStarted'));
+  } catch (e) { toast(String(e), 'err'); }
+  await refreshShare();
+}
+
+async function shareLan() {
+  const allow = document.getElementById('share-reveal') ? document.getElementById('share-reveal').checked : false;
+  try {
+    shareInfo = await invoke('share_start', { mode: 'lan', allow_reveal: allow });
+    toast(t('toast.shareStarted'));
+  } catch (e) { toast(String(e), 'err'); }
+  await refreshShare();
+}
+
+async function stopShare() {
+  try { await invoke('share_stop'); toast(t('toast.shareStopped')); }
+  catch (e) { toast(String(e), 'err'); }
+  await refreshShare();
+}
+
+function storedServer() {
+  try { return localStorage.getItem('cascade-server') || 'http://localhost:7070'; }
+  catch (e) { return 'http://localhost:7070'; }
+}
+function connectHost() {
+  return (document.getElementById('connect-server').value.trim() || 'http://localhost:7070')
+    .replace(/^https?:\/\//, '').replace(/\/+$/, '');
+}
+function connectEnvName() {
+  const id = document.getElementById('connect-env').value;
+  const env = state.envs.find(e => e.id === id);
+  return env ? env.name : null;
+}
+function connectLink() {
+  const env = connectEnvName();
+  const params = [];
+  if (env && env !== 'base') params.push(`env=${encodeURIComponent(env)}`);
+  if (connectToken) params.push(`token=${encodeURIComponent(connectToken)}`);
+  const q = params.length ? `?${params.join('&')}` : '';
+  return `cascade://${connectHost()}/project/${connectProject}${q}`;
+}
+function connectHttpBase() {
+  return (document.getElementById('connect-server').value.trim() || 'http://localhost:7070').replace(/\/+$/, '');
+}
+async function openConnect(projectId) {
+  const p = state.projects.find(x => x.id === projectId);
+  connectProject = projectId;
+  document.getElementById('connect-project-name').textContent = p ? p.name : '';
+  try {
+    state.toolchain = await invoke('toolchain_paths');
+  } catch (e) {
+    state.toolchain = { cli: 'cascade', sdk_python: null, sdk_typescript: null, sdk_go: null };
+  }
+  const sel = document.getElementById('connect-env');
+  sel.innerHTML = state.envs.map(e => `<option value="${e.id}">${esc(e.name)}</option>`).join('');
+  const base = state.envs.find(e => e.name === 'base');
+  if (base) sel.value = base.id;
+  document.querySelectorAll('#connect-tabs .seg').forEach(b => b.classList.toggle('active', b.dataset.tab === connectTab));
+  await refreshShare();
+  openModal('modal-connect');
+}
+
+/** A paste-ready prompt for AI coding assistants (Claude Code, Cursor, Qwen…). */
+function aiPrompt(link, projName, env, zh) {
+  const tc = state.toolchain || {};
+  const cli = tc.cli || 'cascade';
+  const envFlag = env && env !== 'base' ? ` --env ${env}` : '';
+  const remote = !!(shareInfo && shareInfo.lan);
+  const L = [];
+
+  if (remote) {
+    const httpBase = connectHttpBase();
+    const params = [];
+    if (env) params.push(`env=${encodeURIComponent(env)}`);
+    if (connectToken) params.push(`token=${encodeURIComponent(connectToken)}`);
+    const resolvedQ = params.length ? `?${params.join('&')}` : '';
+    const curlUrl = `${httpBase}/api/projects/${connectProject}/resolved${resolvedQ}`;
+    if (zh) {
+      L.push('【Cascade 配置接入】请把当前项目接入 Cascade 配置中心（远程共享）。', '');
+      L.push(`项目：${projName}`);
+      L.push(`项目链接（已含访问令牌）：${link}`);
+      L.push(`HTTP 接口：${curlUrl}`);
+      L.push('返回 JSON 数组：[{ key, value, secret, source }]，secret 为 true 且 value 为 null 表示密钥未开放。', '');
+      L.push('请用最简单的方式接入：');
+      L.push('1) 纯 HTTP（零依赖）：启动时 GET 上面的地址拿全部配置，缓存在内存；');
+      L.push('   定时刷新（如 30s）或失败时沿用上次结果做降级。');
+      L.push('2) Python/Node 项目如需要 SDK：向提供者索取 Cascade 仓库的 sdk/ 目录，本地安装');
+      L.push(`   （pip install "<sdk>/python" 或 npm install "<sdk>/typescript"），再用链接接入（链接已含 token）。`, '');
+      L.push('要求：');
+      L.push('- 先扫描代码里写死的配置/密钥，列清单给我确认，再逐项替换');
+      L.push('- 密钥不要写进代码、不要提交 git');
+      L.push('- 改动尽量小、可回滚；改完告诉我怎么验证');
+    } else {
+      L.push('[Cascade setup] Please wire this project to a shared Cascade config center (remote).', '');
+      L.push(`Project: ${projName}`);
+      L.push(`Project link (includes access token): ${link}`);
+      L.push(`HTTP endpoint: ${curlUrl}`);
+      L.push('Returns a JSON array: [{ key, value, secret, source }]. secret=true with value=null means the secret is not exposed.', '');
+      L.push('Use the simplest option:');
+      L.push('1) Plain HTTP (zero deps): GET the endpoint at startup, cache in memory;');
+      L.push('   refresh periodically (e.g. every 30s) and fall back to the last good copy on failure.');
+      L.push('2) Python/Node: ask the provider for the Cascade repo sdk/ folder, install locally');
+      L.push('   (pip install "<sdk>/python" or npm install "<sdk>/typescript"), then use the link (token included).', '');
+      L.push('Requirements:');
+      L.push('- First scan for hardcoded config/secrets and show me the list; then replace item by item');
+      L.push('- Never write secrets into code or commit them to git');
+      L.push('- Keep the diff small and revertible; tell me how to verify when done');
+    }
+    return L.join('\n');
+  }
+
+  if (zh) {
+    L.push('【Cascade 配置接入】请把当前项目接入 Cascade 统一配置中心。', '');
+    L.push(`项目：${projName}`);
+    L.push(`项目链接：${link}`);
+    L.push('（链接 = Cascade 里这个项目的坐标；密钥默认打码传输）', '');
+    L.push('本机可用的 Cascade 工具：');
+    L.push(`- 命令行：${cli}`);
+    if (tc.sdk_python) L.push(`- Python SDK 源码目录：${tc.sdk_python}`);
+    if (tc.sdk_typescript) L.push(`- TypeScript SDK 源码目录：${tc.sdk_typescript}`);
+    if (tc.sdk_go) L.push(`- Go SDK 源码目录：${tc.sdk_go}`);
+    if (!tc.sdk_python && !tc.sdk_typescript && !tc.sdk_go) {
+      L.push('- SDK 未在本机：请向提供者索取 Cascade 仓库的 sdk/ 目录');
+    }
+    L.push('');
+    L.push('请按项目类型挑最简单的方式接入并实施：');
+    L.push(`方式A（零改动，先做这个验证）：启动命令改为 "${cli} run ${projName}${envFlag} -- <原本的启动命令>"，`);
+    L.push('环境变量会自动注入（database.host → DATABASE_HOST），密钥自动解密注入。');
+    if (tc.sdk_python) {
+      L.push('方式B（Python）：');
+      L.push(`  pip install "${tc.sdk_python}"`);
+      L.push('  from cascade import ConfigCenter');
+      L.push(`  cc = ConfigCenter.from_url("${link}")`);
+      L.push('  print(cc.get("database.host"))   # 解析后的最终值');
+    }
+    if (tc.sdk_typescript) {
+      L.push('方式C（Node/TypeScript）：');
+      L.push(`  npm install "${tc.sdk_typescript}"`);
+      L.push("  import { ConfigCenter } from 'cascade-sdk';");
+      L.push(`  const cc = ConfigCenter.fromUrl('${link}');`);
+      L.push("  console.log(await cc.get('database.host'));");
+    }
+    L.push('');
+    L.push('接入要求：');
+    L.push('- 先扫描代码里写死的配置/密钥，列清单给我确认，再逐项替换成从 Cascade 读取');
+    L.push('- 密钥不要写进代码、不要提交到 git');
+    L.push('- 改动尽量小，保持可回滚，改完告诉我怎么验证');
+  } else {
+    L.push('[Cascade setup] Please wire this project to the Cascade config center.', '');
+    L.push(`Project: ${projName}`);
+    L.push(`Project link: ${link}`);
+    L.push('(The link points at this project inside Cascade; secrets are masked in transit.)', '');
+    L.push('Local Cascade tooling:');
+    L.push(`- CLI: ${cli}`);
+    if (tc.sdk_python) L.push(`- Python SDK source: ${tc.sdk_python}`);
+    if (tc.sdk_typescript) L.push(`- TypeScript SDK source: ${tc.sdk_typescript}`);
+    if (tc.sdk_go) L.push(`- Go SDK source: ${tc.sdk_go}`);
+    if (!tc.sdk_python && !tc.sdk_typescript && !tc.sdk_go) {
+      L.push('- SDKs not found locally: ask the provider for the Cascade repo sdk/ folder');
+    }
+    L.push('');
+    L.push('Pick the simplest option for this project and implement it:');
+    L.push(`Option A (zero change, verify first): wrap the start command as "${cli} run ${projName}${envFlag} -- <original command>".`);
+    L.push('Env vars are injected automatically (database.host -> DATABASE_HOST); secrets are decrypted for the child process.');
+    if (tc.sdk_python) {
+      L.push('Option B (Python):');
+      L.push(`  pip install "${tc.sdk_python}"`);
+      L.push('  from cascade import ConfigCenter');
+      L.push(`  cc = ConfigCenter.from_url("${link}")`);
+      L.push('  print(cc.get("database.host"))   # effective value');
+    }
+    if (tc.sdk_typescript) {
+      L.push('Option C (Node/TypeScript):');
+      L.push(`  npm install "${tc.sdk_typescript}"`);
+      L.push("  import { ConfigCenter } from 'cascade-sdk';");
+      L.push(`  const cc = ConfigCenter.fromUrl('${link}');`);
+      L.push("  console.log(await cc.get('database.host'));");
+    }
+    L.push('');
+    L.push('Requirements:');
+    L.push('- First scan for hardcoded config/secrets and show me the list; then replace item by item');
+    L.push('- Never write secrets into code or commit them to git');
+    L.push('- Keep the diff small and revertible; tell me how to verify when done');
+  }
+  return L.join('\n');
+}
+function renderConnect() {
+  const link = connectLink();
+  const proj = state.projects.find(x => x.id === connectProject);
+  const projName = proj ? proj.name : connectProject;
+  const env = connectEnvName();
+  const envQ = env ? `?env=${encodeURIComponent(env)}` : '';
+  const resolved = `${connectHttpBase()}/api/projects/${connectProject}/resolved${envQ}`;
+  const zh = state.lang === 'zh';
+
+  const snippets = {
+    ai: aiPrompt(link, projName, env, zh),
+    python: [
+      `pip install cascade-sdk  ${zh ? '# 未发布 PyPI 时用仓库路径' : '# or install from the repo'}`,
+      ``,
+      `from cascade import ConfigCenter`,
+      ``,
+      `cc = ConfigCenter.from_url("${link}")`,
+      `${zh ? '# 解析后的最终值（环境覆盖已生效）' : '# effective value (env overrides applied)'}`,
+      `print(cc.get("database.host"))`,
+      ``,
+      `${zh ? '# 变更订阅（SSE，断线自动重连）' : '# change subscription (SSE, auto-reconnect)'}`,
+      `cc.watch(lambda e: print("changed:", e))`,
+      `cc.start_watch()`,
+    ].join('\n'),
+    go: [
+      `import cascade "github.com/configcenter/sdk-go/cascade"`,
+      ``,
+      `client, _ := cascade.FromURL("${link}")`,
+      `${zh ? '// 解析后的最终值' : '// effective value'}`,
+      `host, _ := client.Get("database.host")`,
+      `fmt.Println(host)`,
+      ``,
+      `${zh ? '// 变更订阅' : '// change subscription'}`,
+      `client.Watch(func(event string) { fmt.Println("changed:", event) })`,
+    ].join('\n'),
+    ts: [
+      `import { ConfigCenter } from 'cascade-sdk';`,
+      ``,
+      `const cc = ConfigCenter.fromUrl('${link}');`,
+      `${zh ? '// 解析后的最终值' : '// effective value'}`,
+      `console.log(await cc.get('database.host'));`,
+      ``,
+      `${zh ? '// 变更订阅' : '// change subscription'}`,
+      `cc.on('change', e => console.log('changed:', e));`,
+      `cc.startWatch();`,
+    ].join('\n'),
+    curl: [
+      `${zh ? '# 零依赖：任何语言/工具直接 HTTP' : '# zero dependency: plain HTTP'}`,
+      `curl "${resolved}" \\`,
+      connectToken
+        ? `  -H "Authorization: Bearer ${connectToken}"`
+        : `  -H "Authorization: Bearer $CASCADE_TOKEN"   ${zh ? '# 本机未启用鉴权时删掉这行' : '# drop this line if auth is off'}`,
+      ``,
+      `${zh ? '# 返回值：key / value / secret / source（来源层）' : '# returns key / value / secret / source (which layer)'}`,
+    ].join('\n'),
+    cli: [
+      `${zh ? '# 文件模式：导出解析后的配置，运行时零依赖' : '# file mode: export resolved config, zero runtime deps'}`,
+      `cascade export ${projName} -o ./config.yaml${env ? ` --env ${env}` : ''}`,
+      `cascade export ${projName} -o ./.env --format dotenv${env ? ` --env ${env}` : ''} --watch`,
+      ``,
+      `${zh ? '# 进程注入：零改动喂给任何子进程' : '# process injection: feed any child process'}`,
+      `cascade run ${projName}${env ? ` --env ${env}` : ''} -- python main.py`,
+    ].join('\n'),
+  };
+
+  document.getElementById('connect-link').value = link;
+  document.getElementById('connect-code').textContent = snippets[connectTab] || '';
+}
+async function copyConnectLink() {
+  try { await navigator.clipboard.writeText(connectLink()); toast(t('toast.linkCopied')); }
+  catch { toast(t('toast.copyFailed'), 'err'); }
+}
+async function copyConnectCode() {
+  const code = document.getElementById('connect-code').textContent;
+  try { await navigator.clipboard.writeText(code); toast(t('toast.codeCopied')); }
+  catch { toast(t('toast.copyFailed'), 'err'); }
+}
+document.getElementById('connect-server').addEventListener('input', () => {
+  try { localStorage.setItem('cascade-server', document.getElementById('connect-server').value.trim()); } catch (e) {}
+  renderConnect();
+});
+document.getElementById('connect-env').addEventListener('change', renderConnect);
+document.querySelectorAll('#connect-tabs .seg').forEach(btn => {
+  btn.addEventListener('click', () => {
+    connectTab = btn.dataset.tab;
+    document.querySelectorAll('#connect-tabs .seg').forEach(x => x.classList.toggle('active', x === btn));
+    renderConnect();
+  });
+});
+
+/* ── environments ──────────────────────────────────────── */
+async function loadEnvs() {
+  try {
+    state.envs = await invoke('list_envs');
+    document.getElementById('nav-count-envs').textContent = state.envs.length;
+    const body = document.getElementById('envs-body');
+    const empty = document.getElementById('envs-empty');
+    if (!state.envs.length) {
+      body.innerHTML = '';
+      empty.innerHTML = `<div class="empty"><div class="empty-ic">${icon('layers', 20)}</div><div class="empty-title">${esc(t('empty.envs'))}</div><div class="empty-sub">${esc(t('empty.envsSub'))}</div></div>`;
+      return;
+    }
+    empty.innerHTML = '';
+    const byId = Object.fromEntries(state.envs.map(e => [e.id, e]));
+    const chainOf = e => {
+      const names = [];
+      let cur = e, guard = 0;
+      while (cur && guard++ < 32) { names.unshift(cur.name); cur = cur.parent_id ? byId[cur.parent_id] : null; }
+      return names;
+    };
+    body.innerHTML = state.envs.map(e => {
+      const names = chainOf(e);
+      const chain = names.map((n, i) =>
+        `<span class="tag${i === names.length - 1 ? ' last' : ''}">${esc(n)}</span>` +
+        (i < names.length - 1 ? '<span class="chain-sep">›</span>' : '')
+      ).join('');
+      return `<tr>
+        <td class="cell-key">${esc(e.name)}</td>
+        <td><div class="chain">${chain}</div></td>
+        <td><div class="row-actions">
+          <button class="btn-icon danger" title="${esc(t('act.delete'))}" onclick="deleteEnv('${e.id}')">${icon('trash', 14)}</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  } catch (e) { toast(String(e), 'err'); }
+}
+
+async function openEnvModal() {
+  try {
+    state.envs = await invoke('list_envs');
+    document.getElementById('env-parent').innerHTML =
+      `<option value="">${esc(t('opt.none'))}</option>` +
+      state.envs.map(e => `<option value="${e.id}">${esc(e.name)}</option>`).join('');
+    openModal('modal-env');
+  } catch (e) { toast(String(e), 'err'); }
+}
+
+async function createEnv() {
+  const name = document.getElementById('env-name').value.trim();
+  const parent_id = document.getElementById('env-parent').value || null;
+  if (!name) { toast(t('toast.nameRequired'), 'err'); return; }
+  try {
+    await invoke('create_env', { name, parent_id });
+    closeModal('modal-env');
+    document.getElementById('env-name').value = '';
+    toast(t('toast.envCreated'));
+    loadEnvs();
+  } catch (e) { toast(String(e), 'err'); }
+}
+
+async function deleteEnv(id) {
+  if (!confirm(t('confirm.deleteEnv'))) return;
+  try { await invoke('delete_env', { id }); toast(t('toast.envDeleted')); loadEnvs(); }
+  catch (e) { toast(String(e), 'err'); }
+}
+
+/* ── theme ─────────────────────────────────────────────── */
+function updateThemeIcon() {
+  const dark = document.documentElement.dataset.theme === 'dark';
+  const btn = document.getElementById('theme-toggle');
+  btn.innerHTML = icon(dark ? 'sun' : 'moon', 15);
+  btn.title = dark ? t('theme.toLight') : t('theme.toDark');
+}
+function toggleTheme() {
+  const dark = document.documentElement.dataset.theme === 'dark';
+  if (dark) document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.dataset.theme = 'dark';
+  try { localStorage.setItem('cc-theme', dark ? 'light' : 'dark'); } catch (e) {}
+  updateThemeIcon();
+}
+
+/* ── language ──────────────────────────────────────────── */
+function updateLangButton() {
+  const btn = document.getElementById('lang-toggle');
+  btn.textContent = state.lang === 'zh' ? '中' : 'EN';
+  btn.title = t('lang.title');
+}
+function setLang(lang) {
+  state.lang = lang;
+  try { localStorage.setItem('cc-lang', lang); } catch (e) {}
+  applyI18n();
+  updateLangButton();
+  updateThemeIcon();
+  // Full reload: dropdown options / project cards / env tables are all
+  // generated JS strings, so re-render every view (not just the visible one).
+  Promise.allSettled([loadConfigs(), loadEnvs(), loadProjects()]);
+}
+function toggleLang() { setLang(state.lang === 'zh' ? 'en' : 'zh'); }
+
+/* ── boot ──────────────────────────────────────────────── */
+(async function boot() {
+  let stored = null;
+  try { stored = localStorage.getItem('cc-lang'); } catch (e) {}
+  state.lang = stored || ((navigator.language || '').toLowerCase().startsWith('zh') ? 'zh' : 'en');
+  applyI18n();
+  updateLangButton();
+  updateThemeIcon();
+  try {
+    const vp = await invoke('vault_path');
+    document.getElementById('vault-path').textContent = vp;
+  } catch (e) {}
+  await Promise.allSettled([loadConfigs(), loadEnvs()]);
+  try {
+    const ps = await invoke('list_projects');
+    document.getElementById('nav-count-projects').textContent = ps.length;
+  } catch {}
+})();
+</script>
+</body>
+</html>

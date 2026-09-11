@@ -1,0 +1,19 @@
+[package]
+name = "cc-core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+serde_yaml.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+aes-gcm = "0.10"
+keyring = "2"
+rand = "0.8"
+base64 = "0.21"
+dotenvy = "0.15"
+dirs = "5"

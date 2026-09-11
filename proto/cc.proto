@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package configcenter;
+
+// Secret values are ALWAYS masked as "***" on the wire (same as the HTTP
+// API). There is no reveal path: decrypted values only ever flow through
+// `cc run` / `cc export --reveal` on the local machine.
+service ConfigCenter {
+    rpc GetConfig(GetConfigRequest) returns (Config);
+    rpc ListConfigs(ListConfigsRequest) returns (stream Config);
+    rpc WatchConfigs(WatchRequest) returns (stream ConfigEvent);
+    rpc GetProjectConfigs(GetProjectRequest) returns (ProjectConfigSnapshot);
+}
+
+message GetConfigRequest {
+    string key = 1;
+}
+
+message ListConfigsRequest {
+    string group = 1;
+    string project_id = 2;
+    string env_id = 3;
+}
+
+message Config {
+    string id = 1;
+    string key = 2;
+    string value = 3;
+    bool secret = 4;
+    string group = 5;
+    string description = 6;
+    int64 created_at = 7;
+    int64 updated_at = 8;
+}
+
+message WatchRequest {
+    string project_id = 1;
+    string env_id = 2;
+    repeated string keys = 3;
+}
+
+message ConfigEvent {
+    string event_type = 1;
+    Config config = 2;
+}
+
+message GetProjectRequest {
+    string project_id = 1;
+    string env_id = 2;
+}
+
+message ProjectConfigSnapshot {
+    string project_id = 1;
+    string project_name = 2;
+    string env_id = 3;
+    string env_name = 4;
+    repeated Config configs = 5;
+}

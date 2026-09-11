@@ -1,0 +1,21 @@
+[package]
+name = "cc-cli"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "cascade"
+path = "src/main.rs"
+
+[dependencies]
+cc-core = { path = "../cc-core" }
+cc-store = { path = "../cc-store" }
+clap = { version = "4", features = ["derive"] }
+tokio.workspace = true
+anyhow.workspace = true
+colored = "2"
+serde_json.workspace = true
+serde_yaml.workspace = true
+dirs = "5"
+base64 = "0.21"
+ureq = { version = "2", features = ["json", "tls"] }
