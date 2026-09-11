@@ -38,24 +38,10 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
-      # ── CLI + server binaries ──────────────────────────────
+      # ── CLI + server binaries (staged as desktop sidecars) ──
       - name: Build CLI
         run: cargo build --release -p cc-cli -p cc-server
 
-      - name: Package CLI (unix)
-        if: runner.os != 'Windows'
-        run: |
-          cd target/release
-          tar czf "${GITHUB_WORKSPACE}/cascade-cli-${{ matrix.target }}.tar.gz" cascade cascade-server
-
-      - name: Package CLI (windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          Compress-Archive -Path target/release/cascade.exe,target/release/cascade-server.exe `
-            -DestinationPath cascade-cli-${{ matrix.target }}.zip
-
-      # ── Stage sidecars so the desktop bundle is self-contained ──
       - name: Stage sidecars
         shell: bash
         run: |
@@ -84,7 +70,6 @@ jobs:
           name: cascade-${{ matrix.target }}
           if-no-files-found: error
           path: |
-            cascade-cli-${{ matrix.target }}.*
             target/release/bundle/dmg/*.dmg
             target/release/bundle/nsis/*.exe
 
@@ -106,9 +91,10 @@ jobs:
           body: |
             ## 安装
 
-            - **macOS (Apple Silicon)**：下载 `Cascade_*_aarch64.dmg`（桌面端）或 `cascade-cli-aarch64-apple-darwin.tar.gz`（命令行）
-            - **Windows (x64)**：下载 `Cascade_*_x64-setup.exe`（桌面端）或 `cascade-cli-x86_64-pc-windows-msvc.zip`（命令行）
+            - **macOS (Apple Silicon)**：`Cascade_*_aarch64.dmg`
+            - **Windows (x64)**：`Cascade_*_x64-setup.exe`
 
-            > 桌面端安装包已内置 CLI 与本地服务（局域网分享 / AI 接入开箱即用），无需单独安装。
+            一个安装包全套：桌面端 + `cascade` 命令行 + 本地服务（局域网分享 / AI 接入开箱即用）。
+
+            > 终端里直接用 `cascade`：macOS 在 `Cascade.app/Contents/MacOS/cascade-cli`，Windows 在安装目录 `cascade-cli.exe`；要全局命令自行加 PATH 或软链即可。
             > 未签名构建：macOS 首次打开需右键 → 打开；Windows SmartScreen 选择"仍要运行"。
-            > 需要终端里直接用 `cascade` 命令时，再装 CLI 包并加入 PATH。
