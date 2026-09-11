@@ -45,6 +45,17 @@ jobs:
           Compress-Archive -Path target/release/cascade.exe,target/release/cascade-server.exe `
             -DestinationPath cascade-cli-${{ matrix.target }}.zip
 
+      # ── Stage sidecars so the desktop bundle is self-contained ──
+      - name: Stage sidecars
+        shell: bash
+        run: |
+          ext=""
+          if [ "${{ runner.os }}" = "Windows" ]; then ext=".exe"; fi
+          mkdir -p crates/cc-desktop/binaries
+          cp "target/release/cascade${ext}" "crates/cc-desktop/binaries/cascade-cli-${{ matrix.target }}${ext}"
+          cp "target/release/cascade-server${ext}" "crates/cc-desktop/binaries/cascade-server-${{ matrix.target }}${ext}"
+          ls -la crates/cc-desktop/binaries/
+
       # ── Desktop app (Tauri) ────────────────────────────────
       - uses: actions/setup-node@v4
         with:
@@ -87,5 +98,6 @@ jobs:
             - **macOS (Apple Silicon)**：下载 `Cascade_*_aarch64.dmg`（桌面端）或 `cascade-cli-aarch64-apple-darwin.tar.gz`（命令行）
             - **Windows (x64)**：下载 `Cascade_*_x64-setup.exe`（桌面端）或 `cascade-cli-x86_64-pc-windows-msvc.zip`（命令行）
 
+            > 桌面端安装包已内置 CLI 与本地服务（局域网分享 / AI 接入开箱即用），无需单独安装。
             > 未签名构建：macOS 首次打开需右键 → 打开；Windows SmartScreen 选择"仍要运行"。
-            > CLI 解压后把 `cascade` / `cascade-server` 放进 PATH 即可。
+            > 需要终端里直接用 `cascade` 命令时，再装 CLI 包并加入 PATH。

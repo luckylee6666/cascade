@@ -35,3 +35,6 @@ __pycache__/
 # Runtime artifacts
 *.cc-backup
 .cc-tmp-*
+
+# Staged Tauri sidecars (built in CI / locally before bundling)
+crates/cc-desktop/binaries/

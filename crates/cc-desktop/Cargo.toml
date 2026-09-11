@@ -4,7 +4,7 @@ version.workspace = true
 edition.workspace = true
 
 [[bin]]
-name = "Cascade"
+name = "cascade-desktop"
 path = "src/main.rs"
 
 [build-dependencies]

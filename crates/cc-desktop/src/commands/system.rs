@@ -29,10 +29,18 @@ pub struct ToolchainPaths {
 pub fn toolchain_paths() -> ToolchainPaths {
     let exe = std::env::current_exe().ok();
 
+    // Bundle sidecar is named `cascade-cli` (a bare `cascade` would case-collide
+    // with the main `Cascade` binary on macOS/Windows file systems); PATH
+    // installs of the CLI use `cascade`.
     let cli = exe
         .as_ref()
-        .and_then(|p| p.parent().map(|d| d.join("cascade")))
-        .filter(|p| p.exists())
+        .and_then(|p| p.parent())
+        .and_then(|dir| {
+            ["cascade-cli", "cascade"]
+                .iter()
+                .map(|name| dir.join(name))
+                .find(|candidate| candidate.exists())
+        })
         .map(|p| p.display().to_string())
         .unwrap_or_else(|| "cascade".to_string());
 
