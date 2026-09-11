@@ -713,7 +713,7 @@ dependencies = [
 
 [[package]]
 name = "cascade-sdk"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "dirs 5.0.1",
@@ -744,7 +744,7 @@ dependencies = [
 
 [[package]]
 name = "cc-cli"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "base64 0.21.7",
@@ -761,7 +761,7 @@ dependencies = [
 
 [[package]]
 name = "cc-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "aes-gcm",
  "anyhow",
@@ -780,7 +780,7 @@ dependencies = [
 
 [[package]]
 name = "cc-desktop"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "cc-core",
  "cc-store",
@@ -796,7 +796,7 @@ dependencies = [
 
 [[package]]
 name = "cc-server"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "axum",
@@ -820,7 +820,7 @@ dependencies = [
 
 [[package]]
 name = "cc-store"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "cc-core",

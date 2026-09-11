@@ -6,7 +6,7 @@
 
   <groupId>io.github.luckylee6666</groupId>
   <artifactId>cascade-sdk</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <packaging>jar</packaging>
 
   <name>Cascade SDK</name>
