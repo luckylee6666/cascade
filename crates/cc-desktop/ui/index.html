@@ -105,12 +105,10 @@
   .brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px 18px; }
   .brand-mark {
     width: 30px; height: 30px;
-    border-radius: 9px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    display: flex; align-items: center; justify-content: center;
-    color: #fff;
-    box-shadow: 0 4px 14px var(--accent-shadow);
+    flex-shrink: 0;
+    filter: drop-shadow(0 4px 10px rgba(16,24,40,.28));
   }
+  .brand-mark img { display: block; width: 30px; height: 30px; }
   .brand-name { font-size: 13.5px; font-weight: 600; letter-spacing: .01em; }
   .brand-sub { font-size: 10.5px; color: var(--text-3); margin-top: 1px; }
 
@@ -481,11 +479,7 @@
   <aside class="sidebar">
     <div class="brand">
       <div class="brand-mark">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/>
-          <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/>
-          <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>
-        </svg>
+        <img src="logo.png" width="30" height="30" alt="Cascade" draggable="false">
       </div>
       <div>
         <div class="brand-name">Cascade</div>

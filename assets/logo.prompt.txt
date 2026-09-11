@@ -1,0 +1,10 @@
+Use case: logo-brand
+Asset type: finished macOS application icon for the developer configuration tool Cascade, one 1024×1024 square raster PNG.
+
+Primary request: Create an original, exceptionally polished, minimal app icon embodying cascading configuration inheritance: base → environment → project. Deliver the actual icon artwork, no presentation sheet or device mockup.
+
+Composition: a large centered dark graphite rounded-square macOS icon tile, straight-on view, generous continuous rounded corners and a narrow even outside margin. Use a genuinely transparent background outside the tile. Within the tile, one bold, compact abstract cascade symbol occupies about two thirds of its width. Build the symbol from exactly three broad, softly rounded ribbon-like tiers stepping downward, with a clear offset and strong dark negative-space gaps. Their subtly folded descending edges suggest a flowing waterfall between configuration layers. The three tiers should read together as one memorable cohesive glyph, with the simplest possible silhouette. Balanced optical centering.
+
+Style: contemporary premium developer tool aesthetic in the spirit of Linear, Vercel and Arc, but an original mark. Restrained dimensionality with very subtle beveled edges, immaculate smooth surfaces, soft studio lighting. Cool luminous mint/cyan at the upper tier flowing through blue into periwinkle at the lower tier, against near-black graphite. High contrast, large solid shapes, understated gradients, no excessive glow. Silhouette and all three tiers must remain clearly distinguishable at 32×32.
+
+Constraints: exactly one icon, 1024×1024 canvas. No text, letters, wordmark, arrows, gears, sliders, code symbols, tiny decorative details, scenery, watermark, or extra objects. Raster image generated directly, not SVG, HTML, CSS, or a code-drawn image.

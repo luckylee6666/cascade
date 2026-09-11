@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/logo.png" width="120" alt="Cascade"></p>
+
 # Cascade
 
 多项目共享的配置中心：一个配置池，多个项目自由组合归属，配置沿 `base → 环境 → 项目` 级联覆盖，再编译成各家工具方言。Rust 单二进制，本地跑、服务端部署都行。CLI 是 `cascade`，vault 在 `~/.cascade`（`$CASCADE_VAULT` 可覆盖，兼容旧 `~/.cc` 自动回退）。
